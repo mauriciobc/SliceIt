@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'Inter';
+        src: url('data:font/woff2;base64,') format('woff2');
+      }
+      @font-face {
+        font-family: 'Oswald';
+        src: url('data:font/woff2;base64,') format('woff2');
+      }
+      text { font-family: 'Inter', sans-serif; }
+      .title { font-family: 'Oswald', sans-serif; }
+    </style>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="#1a1a2e"/>
+  
+  <!-- Segments with proper positioning -->
+  <g transform="translate(960,540)">
+    <!-- Segment 1 - Red (Top) -->
+    <path d="M0,0 L0,-400 A400,400 0 0,1 380,-123 Z" fill="#e63946"/>
+    <text x="150" y="-280" fill="white" font-size="18" font-weight="bold">16.2M</text>
+    <text x="150" y="-260" fill="white" font-size="12">TEXTS SENT</text>
+    
+    <!-- Segment 2 - Orange (Top Right) -->
+    <path d="M0,0 L380,-123 A400,400 0 0,1 323,235 Z" fill="#f4a261"/>
+    <text x="320" y="20" fill="white" font-size="18" font-weight="bold">231M</text>
+    <text x="320" y="40" fill="white" font-size="12">EMAILS SENT</text>
+    
+    <!-- Segment 3 - Yellow (Right) -->
+    <path d="M0,0 L323,235 A400,400 0 0,1 123,380 Z" fill="#e9c46a"/>
+    <text x="230" y="300" fill="white" font-size="18" font-weight="bold">6M</text>
+    <text x="230" y="320" fill="white" font-size="12">SHOPPING ONLINE</text>
+    
+    <!-- Segment 4 - Green (Bottom Right) -->
+    <path d="M0,0 L123,380 A400,400 0 0,1 -123,380 Z" fill="#2a9d8f"/>
+    <text x="0" y="360" fill="white" font-size="18" font-weight="bold">6.3M</text>
+    <text x="0" y="380" fill="white" font-size="12">GOOGLE SEARCHES</text>
+    
+    <!-- Segment 5 - Cyan (Bottom) -->
+    <path d="M0,0 L-123,380 A400,400 0 0,1 -323,235 Z" fill="#00b4d8"/>
+    <text x="-230" y="300" fill="white" font-size="18" font-weight="bold">44M</text>
+    <text x="-230" y="320" fill="white" font-size="12">FACEBOOK LIVE</text>
+    
+    <!-- Segment 6 - Blue (Bottom Left) -->
+    <path d="M0,0 L-323,235 A400,400 0 0,1 -380,-123 Z" fill="#0077b6"/>
+    <text x="-320" y="20" fill="white" font-size="18" font-weight="bold">12.5K</text>
+    <text x="-320" y="40" fill="white" font-size="12">RIDE-SHARES</text>
+    
+    <!-- Segment 7 - Purple (Left) -->
+    <path d="M0,0 L-380,-123 A400,400 0 0,1 -235,-323 Z" fill="#7209b7"/>
+    <text x="-350" y="-200" fill="white" font-size="18" font-weight="bold">20.8K</text>
+    <text x="-350" y="-180" fill="white" font-size="12">LINKEDIN USERS</text>
+    
+    <!-- Segment 8 - Pink (Top Left) -->
+    <path d="M0,0 L-235,-323 A400,400 0 0,1 0,-400 Z" fill="#f72585"/>
+    <text x="-100" y="-350" fill="white" font-size="18" font-weight="bold">2.1M</text>
+    <text x="-100" y="-330" fill="white" font-size="12">FACEBOOK ACTIVE</text>
+  </g>
+  
+  <!-- Central Circle -->
+  <circle cx="960" cy="540" r="180" fill="#ffffff"/>
+  <circle cx="960" cy="540" r="175" fill="#1a1a2e"/>
+  
+  <!-- Clock Icon -->
+  <circle cx="960" cy="480" r="40" fill="none" stroke="white" stroke-width="3"/>
+  <line x1="960" y1="480" x2="960" y2="455" stroke="white" stroke-width="3"/>
+  <line x1="960" y1="480" x2="975" y2="480" stroke="white" stroke-width="3"/>
+  
+  <!-- Center Text -->
+  <text x="960" y="560" text-anchor="middle" fill="white" class="title" font-size="36" font-weight="bold">EVERY</text>
+  <text x="960" y="600" text-anchor="middle" fill="#00b4d8" class="title" font-size="48" font-weight="bold">minute</text>
+  <text x="960" y="640" text-anchor="middle" fill="white" class="title" font-size="28">OF THE DAY</text>
+  
+  <!-- Brand Icons (simplified) -->
+  <g transform="translate(960,540)">
+    <!-- Twitter/X -->
+    <circle cx="0" cy="-250" r="20" fill="#1da1f2"/>
+    <text x="0" y="-245" text-anchor="middle" fill="white" font-size="14" font-weight="bold">X</text>
+    
+    <!-- YouTube -->
+    <circle cx="180" cy="-180" r="20" fill="#ff0000"/>
+    <text x="180" y="-175" text-anchor="middle" fill="white" font-size="14" font-weight="bold">▶</text>
+    
+    <!-- Instagram -->
+    <circle cx="250" cy="0" r="20" fill="#e1306c"/>
+    <text x="250" y="5" text-anchor="middle" fill="white" font-size="14" font-weight="bold">📷</text>
+    
+    <!-- Facebook -->
+    <circle cx="180" cy="180" r="20" fill="#4267B2"/>
+    <text x="180" y="185" text-anchor="middle" fill="white" font-size="14" font-weight="bold">f</text>
+    
+    <!-- LinkedIn -->
+    <circle cx="0" cy="250" r="20" fill="#0077B5"/>
+    <text x="0" y="255" text-anchor="middle" fill="white" font-size="14" font-weight="bold">in</text>
+    
+    <!-- TikTok -->
+    <circle cx="-180" cy="180" r="20" fill="#000000"/>
+    <text x="-180" y="185" text-anchor="middle" fill="white" font-size="14" font-weight="bold">♪</text>
+    
+    <!-- Snapchat -->
+    <circle cx="-250" cy="0" r="20" fill="#fffc00"/>
+    <text x="-250" y="5" text-anchor="middle" fill="black" font-size="14" font-weight="bold">👻</text>
+    
+    <!-- Netflix -->
+    <circle cx="-180" cy="-180" r="20" fill="#e50914"/>
+    <text x="-180" y="-175" text-anchor="middle" fill="white" font-size="14" font-weight="bold">N</text>
+  </g>
+</svg>
