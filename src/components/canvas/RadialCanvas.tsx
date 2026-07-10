@@ -16,7 +16,7 @@ export function RadialCanvas() {
   const typography = useProjectStore((state) => state.typography);
   const palette = useProjectStore((state) => state.palette);
 
-  const geometry = useMemo(() => computeCanvasGeometry(canvas, slices), [canvas, slices]);
+  const geometry = useMemo(() => computeCanvasGeometry(canvas, slices, typography), [canvas, slices, typography]);
   const sliceColors = useMemo(() => getAllSliceColors(palette, slices), [palette, slices]);
   const centerColor = useMemo(
     () => centerConfig.centerColorOverride ?? deriveCenterColor(sliceColors),

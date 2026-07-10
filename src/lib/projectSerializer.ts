@@ -51,6 +51,8 @@ const typographySchema = z.object({
   showIcons: z.boolean(),
   iconSize: z.number(),
   metricLabelGap: z.number().optional(),
+  iconVerticalPosition: z.number().optional(),
+  iconMargin: z.number().optional(),
 });
 
 const sliceSchema = z.object({
@@ -60,6 +62,8 @@ const sliceSchema = z.object({
   color: z.string().optional(),
   icon: z.string().optional(),
   uploadedIconId: z.string().optional(),
+  iconVerticalPosition: z.number().optional(),
+  iconMargin: z.number().optional(),
 });
 
 const projectSchema = z.object({

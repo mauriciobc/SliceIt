@@ -65,7 +65,8 @@ export function SliceRenderer({
 
   const metricY = wedge.safeBounds.y + wedge.safeBounds.height * 0.25;
   const labelY = metricY + wedge.safeBounds.height * typography.metricLabelGap;
-  const iconY = wedge.safeBounds.y + wedge.safeBounds.height * 0.82;
+  const effectiveIconVerticalPosition = slice.iconVerticalPosition ?? typography.iconVerticalPosition;
+  const iconY = wedge.safeBounds.y + wedge.safeBounds.height * effectiveIconVerticalPosition;
 
   const uploadedIcons = useProjectStore((state) => state.uploadedIcons);
   const uploadedIcon = slice.uploadedIconId

@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
 import { Slice } from '@/types/infographic';
 import { createUploadedImage } from '@/lib/fileUpload';
 import { IconPicker } from '@/components/editor/IconPicker';
@@ -18,18 +20,9 @@ export function SliceEditor() {
   const updateSlice = useProjectStore((state) => state.updateSlice);
   const reorderSlices = useProjectStore((state) => state.reorderSlices);
   const setSelectedSliceId = useProjectStore((state) => state.setSelectedSliceId);
-  const uploadedIcons = useProjectStore((state) => state.uploadedIcons);
-  const addUploadedIcon = useProjectStore((state) => state.addUploadedIcon);
 
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const selectedSlice = slices.find((s) => s.id === selectedSliceId);
-
-  const handleIconUpload = async (file: File) => {
-    if (!['image/svg+xml', 'image/png'].includes(file.type)) return;
-    const image = await createUploadedImage(file);
-    addUploadedIcon(image);
-    updateSlice(selectedSliceId!, { uploadedIconId: image.id, icon: undefined });
-  };
 
   const handleDragStart = (id: string) => {
     setDraggedId(id);
@@ -172,6 +165,7 @@ interface SliceFormProps {
 function SliceForm({ slice, onUpdate }: SliceFormProps) {
   const uploadedIcons = useProjectStore((state) => state.uploadedIcons);
   const addUploadedIcon = useProjectStore((state) => state.addUploadedIcon);
+  const typography = useProjectStore((state) => state.typography);
 
   const handleIconUpload = async (file: File) => {
     if (!['image/svg+xml', 'image/png'].includes(file.type)) return;
@@ -179,6 +173,9 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
     addUploadedIcon(image);
     onUpdate({ uploadedIconId: image.id, icon: undefined });
   };
+
+  const useGlobalVerticalPosition = slice.iconVerticalPosition === undefined;
+  const useGlobalMargin = slice.iconMargin === undefined;
 
   return (
     <div className="space-y-3">
@@ -229,6 +226,69 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
           onUpload={handleIconUpload}
         />
       </div>
+
+      {(slice.icon || slice.uploadedIconId) && (
+        <>
+          <Separator className="my-4" />
+          <div className="space-y-3">
+            <h4 className="text-sm font-medium">Icon Position Override</h4>
+            
+            <div className="flex items-center justify-between">
+              <Label htmlFor="use-global-vertical">Use global position</Label>
+              <Switch
+                id="use-global-vertical"
+                checked={useGlobalVerticalPosition}
+                onCheckedChange={(checked) => 
+                  onUpdate({ iconVerticalPosition: checked ? undefined : typography.iconVerticalPosition })
+                }
+              />
+            </div>
+            
+            {!useGlobalVerticalPosition && (
+              <div className="space-y-2">
+                <Label htmlFor="slice-icon-vertical-position">
+                  Position: {(slice.iconVerticalPosition ?? typography.iconVerticalPosition).toFixed(2)}
+                </Label>
+                <Slider
+                  id="slice-icon-vertical-position"
+                  value={[slice.iconVerticalPosition ?? typography.iconVerticalPosition]}
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  onValueChange={([value]) => onUpdate({ iconVerticalPosition: value })}
+                />
+              </div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <Label htmlFor="use-global-margin">Use global margin</Label>
+              <Switch
+                id="use-global-margin"
+                checked={useGlobalMargin}
+                onCheckedChange={(checked) => 
+                  onUpdate({ iconMargin: checked ? undefined : typography.iconMargin })
+                }
+              />
+            </div>
+            
+            {!useGlobalMargin && (
+              <div className="space-y-2">
+                <Label htmlFor="slice-icon-margin">
+                  Margin: {(slice.iconMargin ?? typography.iconMargin)}px
+                </Label>
+                <Slider
+                  id="slice-icon-margin"
+                  value={[slice.iconMargin ?? typography.iconMargin]}
+                  min={0}
+                  max={50}
+                  step={1}
+                  onValueChange={([value]) => onUpdate({ iconMargin: value })}
+                />
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
