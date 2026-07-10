@@ -86,6 +86,38 @@ export function CanvasPanel() {
           />
         </div>
       </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="segment-extension">
+          Segment Extension: {canvas.segmentExtension?.toFixed(1) ?? '1.3'}
+        </Label>
+        <Input
+          id="segment-extension"
+          type="range"
+          min={1.0}
+          max={2.0}
+          step={0.1}
+          value={canvas.segmentExtension ?? 1.3}
+          onChange={(e) => setCanvas({ segmentExtension: parseFloat(e.target.value) })}
+        />
+        <p className="text-xs text-muted-foreground">How far segments extend beyond canvas (1.0 = to edge, 1.5 = 50% bleed)</p>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="text-padding">
+          Text Position: {canvas.textPadding?.toFixed(2) ?? '0.40'}
+        </Label>
+        <Input
+          id="text-padding"
+          type="range"
+          min={0.2}
+          max={0.8}
+          step={0.05}
+          value={canvas.textPadding ?? 0.4}
+          onChange={(e) => setCanvas({ textPadding: parseFloat(e.target.value) })}
+        />
+        <p className="text-xs text-muted-foreground">Text position within segments (0.0 = inner, 1.0 = outer)</p>
+      </div>
     </div>
   );
 }

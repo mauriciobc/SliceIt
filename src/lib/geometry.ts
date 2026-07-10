@@ -1,4 +1,3 @@
-import { arc } from 'd3-shape';
 import { CanvasConfig, Dimensions, LayoutMode, Slice } from '@/types/infographic';
 
 export interface Point {
@@ -37,72 +36,107 @@ export function getLayoutMode(dimensions: Dimensions): LayoutMode {
   return ratio > 1 ? 'landscape' : 'portrait';
 }
 
+function ringPoint(a: number, rx: number, ry: number): Point {
+  return { x: rx * Math.sin(a), y: -ry * Math.cos(a) };
+}
+
+export function buildWedgePath(
+  startAngle: number,
+  endAngle: number,
+  innerRadius: number,
+  outerRadiusX: number,
+  outerRadiusY: number,
+  inflate = 0
+): string {
+  const rOutX = outerRadiusX + inflate;
+  const rOutY = outerRadiusY + inflate;
+
+  const innerStart = ringPoint(startAngle, innerRadius, innerRadius);
+  const outerStart = ringPoint(startAngle, rOutX, rOutY);
+  const outerEnd = ringPoint(endAngle, rOutX, rOutY);
+  const innerEnd = ringPoint(endAngle, innerRadius, innerRadius);
+
+  return [
+    `M ${innerStart.x} ${innerStart.y}`,
+    `L ${outerStart.x} ${outerStart.y}`,
+    `A ${rOutX} ${rOutY} 0 0 1 ${outerEnd.x} ${outerEnd.y}`,
+    `L ${innerEnd.x} ${innerEnd.y}`,
+    `A ${innerRadius} ${innerRadius} 0 0 0 ${innerStart.x} ${innerStart.y}`,
+    'Z',
+  ].join(' ');
+}
+
 export function computeCanvasGeometry(
   canvas: CanvasConfig,
   slices: Slice[]
 ): CanvasGeometry {
   const { width, height } = canvas.dimensions;
+  const segmentExtension = canvas.segmentExtension ?? 1.3;
+  const textPadding = canvas.textPadding ?? 0.4;
   const layout = getLayoutMode(canvas.dimensions);
   const centerX = width / 2;
   const centerY = height / 2;
 
-  const padding = Math.min(width, height) * 0.04;
   const innerRadius = Math.min(width, height) * 0.18;
 
   let outerRadiusX: number;
   let outerRadiusY: number;
 
   if (layout === 'square') {
-    const available = Math.min(width, height) / 2 - padding;
-    outerRadiusX = available;
-    outerRadiusY = available;
+    const available = Math.min(width, height) / 2;
+    outerRadiusX = available * segmentExtension;
+    outerRadiusY = available * segmentExtension;
   } else if (layout === 'landscape') {
-    outerRadiusY = height / 2 - padding;
-    outerRadiusX = width / 2 - padding * 2;
+    outerRadiusY = height / 2 * segmentExtension;
+    outerRadiusX = width / 2 * segmentExtension;
   } else {
-    outerRadiusX = width / 2 - padding;
-    outerRadiusY = height / 2 - padding * 2;
+    outerRadiusX = width / 2 * segmentExtension;
+    outerRadiusY = height / 2 * segmentExtension;
   }
+
+  const R = Math.max(outerRadiusX, outerRadiusY);
+  const scaleX = R === 0 ? 1 : outerRadiusX / R;
+  const scaleY = R === 0 ? 1 : outerRadiusY / R;
 
   const sliceCount = slices.length;
   const anglePerSlice = (2 * Math.PI) / sliceCount;
-
-  const wedgeArc = arc<unknown, unknown>()
-    .innerRadius(innerRadius)
-    .outerRadius(Math.max(outerRadiusX, outerRadiusY))
-    .startAngle((_, i) => i * anglePerSlice - Math.PI / 2)
-    .endAngle((_, i) => (i + 1) * anglePerSlice - Math.PI / 2);
-
-  const wedgeArcClip = arc<unknown, unknown>()
-    .innerRadius(innerRadius)
-    .outerRadius(Math.max(outerRadiusX, outerRadiusY) + 1)
-    .startAngle((_, i) => i * anglePerSlice - Math.PI / 2)
-    .endAngle((_, i) => (i + 1) * anglePerSlice - Math.PI / 2);
 
   const wedges: WedgeGeometry[] = slices.map((slice, index) => {
     const startAngle = index * anglePerSlice - Math.PI / 2;
     const endAngle = (index + 1) * anglePerSlice - Math.PI / 2;
     const midAngle = (startAngle + endAngle) / 2;
 
-    const path = wedgeArc(null as unknown as unknown, index) ?? '';
-    const clipPath = wedgeArcClip(null as unknown as unknown, index) ?? '';
+    const path = buildWedgePath(
+      startAngle,
+      endAngle,
+      innerRadius,
+      outerRadiusX,
+      outerRadiusY
+    );
+    const clipPath = buildWedgePath(
+      startAngle,
+      endAngle,
+      innerRadius,
+      outerRadiusX,
+      outerRadiusY,
+      1
+    );
 
-    const centroidRadius = innerRadius + (Math.max(outerRadiusX, outerRadiusY) - innerRadius) * 0.55;
-    // d3-shape.arc uses 0 at 12 o'clock with clockwise-positive angles, so convert
-    // the arc's midAngle to centered SVG coordinates.
+    const midRadius = innerRadius + (R - innerRadius) * textPadding;
+    const canonical = ringPoint(midAngle, midRadius, midRadius);
     const centroid: Point = {
-      x: Math.sin(midAngle) * centroidRadius,
-      y: -Math.cos(midAngle) * centroidRadius,
+      x: canonical.x * scaleX,
+      y: canonical.y * scaleY,
     };
 
-    // Compute a safe bounding box for text inside the wedge, also in centered space
-    const safeWidth = Math.min(outerRadiusX, outerRadiusY) * 0.55;
-    const safeHeight = Math.min(outerRadiusX, outerRadiusY) * 0.35;
+    const chordLength = 2 * midRadius * Math.sin(anglePerSlice / 2);
+    const safeWidth0 = chordLength * 0.7;
+    const safeHeight0 = (R - innerRadius) * 0.45;
     const safeBounds = {
-      x: centroid.x - safeWidth / 2,
-      y: centroid.y - safeHeight / 2,
-      width: safeWidth,
-      height: safeHeight,
+      x: (canonical.x - safeWidth0 / 2) * scaleX,
+      y: (canonical.y - safeHeight0 / 2) * scaleY,
+      width: safeWidth0 * scaleX,
+      height: safeHeight0 * scaleY,
     };
 
     return {
@@ -111,7 +145,7 @@ export function computeCanvasGeometry(
       startAngle,
       endAngle,
       innerRadius,
-      outerRadius: Math.max(outerRadiusX, outerRadiusY),
+      outerRadius: R,
       centroid,
       path,
       clipPath,

@@ -11,6 +11,8 @@ export interface CanvasConfig {
   aspectRatio: AspectRatioPreset;
   dimensions: Dimensions;
   backgroundColor: string;
+  segmentExtension: number;
+  textPadding: number;
 }
 
 export type PaletteMode = 'single' | 'gradient' | 'manual';
