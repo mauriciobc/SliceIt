@@ -15,22 +15,26 @@ import {
   TypographyConfig,
   updateDimensionsForAspectRatio,
   UploadedImage,
+  ValidationMessage,
 } from '@/types/infographic';
 import { createDefaultProject } from '@/lib/sampleData';
 import { nanoid } from '@/lib/nanoid';
 
 function validateSliceCount(count: number): Pick<AppState, 'warnings' | 'errors'> {
-  const warnings: string[] = [];
-  const errors: string[] = [];
+  const warnings: ValidationMessage[] = [];
+  const errors: ValidationMessage[] = [];
 
   if (count > HARD_MAX_SLICES) {
-    errors.push(`Maximum ${HARD_MAX_SLICES} slices allowed.`);
+    errors.push({ key: 'validation.maxSlices', params: { max: HARD_MAX_SLICES } });
   } else if (count > RECOMMENDED_MAX_SLICES) {
-    warnings.push('More than 24 slices may reduce readability.');
+    warnings.push({
+      key: 'validation.recommendedSlices',
+      params: { max: RECOMMENDED_MAX_SLICES },
+    });
   }
 
   if (count < MIN_SLICES) {
-    errors.push(`At least ${MIN_SLICES} slices are required.`);
+    errors.push({ key: 'validation.minSlices', params: { min: MIN_SLICES } });
   }
 
   return { warnings, errors };

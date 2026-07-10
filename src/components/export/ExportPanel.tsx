@@ -11,8 +11,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Download, Image } from 'lucide-react';
+import { useI18n } from '@/i18n';
 
 export function ExportPanel() {
+  const { t } = useI18n();
   const [pngResolution, setPngResolution] = useState<PngResolution>('2x');
 
   return (
@@ -22,7 +24,7 @@ export function ExportPanel() {
       <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" onClick={() => exportSvg()}>
           <Download className="mr-1 h-4 w-4" />
-          SVG
+          {t('export.svg')}
         </Button>
 
         <div className="flex items-center gap-2">
@@ -30,13 +32,13 @@ export function ExportPanel() {
             value={pngResolution}
             onValueChange={(v) => setPngResolution(v as PngResolution)}
           >
-            <SelectTrigger className="h-8 w-[140px]" aria-label="PNG resolution">
+            <SelectTrigger className="h-8 w-[140px]" aria-label={t('export.pngResolution')}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(PNG_RESOLUTIONS).map(([key, { label }]) => (
+              {Object.entries(PNG_RESOLUTIONS).map(([key]) => (
                 <SelectItem key={key} value={key}>
-                  {label}
+                  {t(`export.resolution.${key}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -44,7 +46,7 @@ export function ExportPanel() {
 
           <Button variant="default" size="sm" onClick={() => exportPng(pngResolution)}>
             <Image className="mr-1 h-4 w-4" />
-            PNG
+            {t('export.png')}
           </Button>
         </div>
       </div>

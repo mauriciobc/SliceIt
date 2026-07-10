@@ -9,15 +9,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { PaletteMode } from '@/types/infographic';
+import { useI18n } from '@/i18n';
 
 export function PalettePanel() {
+  const { t } = useI18n();
   const palette = useProjectStore((state) => state.palette);
   const setPalette = useProjectStore((state) => state.setPalette);
 
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="palette-mode">Palette Mode</Label>
+        <Label htmlFor="palette-mode">{t('palette.mode')}</Label>
         <Select
           value={palette.mode}
           onValueChange={(v) => setPalette({ mode: v as PaletteMode })}
@@ -26,16 +28,16 @@ export function PalettePanel() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="single">Single Color</SelectItem>
-            <SelectItem value="gradient">Start / End</SelectItem>
-            <SelectItem value="manual">Manual</SelectItem>
+            <SelectItem value="single">{t('palette.single')}</SelectItem>
+            <SelectItem value="gradient">{t('palette.gradient')}</SelectItem>
+            <SelectItem value="manual">{t('palette.manual')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {palette.mode === 'single' && (
         <div className="space-y-2">
-          <Label htmlFor="single-color">Base Color</Label>
+          <Label htmlFor="single-color">{t('palette.baseColor')}</Label>
           <div className="flex items-center gap-2">
             <Input
               id="single-color"
@@ -56,7 +58,7 @@ export function PalettePanel() {
       {palette.mode === 'gradient' && (
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="gradient-start">Start Color</Label>
+            <Label htmlFor="gradient-start">{t('palette.startColor')}</Label>
             <div className="flex items-center gap-2">
               <Input
                 id="gradient-start"
@@ -73,7 +75,7 @@ export function PalettePanel() {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="gradient-end">End Color</Label>
+            <Label htmlFor="gradient-end">{t('palette.endColor')}</Label>
             <div className="flex items-center gap-2">
               <Input
                 id="gradient-end"
@@ -94,7 +96,7 @@ export function PalettePanel() {
 
       {palette.mode === 'manual' && (
         <p className="text-sm text-muted-foreground">
-          Edit colors directly in the slice list on the Slices tab.
+          {t('palette.manualHint')}
         </p>
       )}
     </div>
