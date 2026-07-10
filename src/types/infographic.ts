@@ -76,9 +76,14 @@ export interface ProjectState {
   selectedSliceId: string | null;
 }
 
+export interface ValidationMessage {
+  key: string;
+  params?: Record<string, string | number>;
+}
+
 export interface EditorState {
-  warnings: string[];
-  errors: string[];
+  warnings: ValidationMessage[];
+  errors: ValidationMessage[];
 }
 
 export type AppState = ProjectState & EditorState;

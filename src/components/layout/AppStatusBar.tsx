@@ -1,7 +1,9 @@
 import { useProjectStore } from '@/store/useProjectStore';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/i18n';
 
 export function AppStatusBar() {
+  const { t } = useI18n();
   const warnings = useProjectStore((state) => state.warnings);
   const errors = useProjectStore((state) => state.errors);
 
@@ -17,18 +19,18 @@ export function AppStatusBar() {
       {hasMessages && (
         <div className="flex items-center gap-3">
           {errors.map((error) => (
-            <span key={error} className="text-destructive">
-              {error}
+            <span key={error.key} className="text-destructive">
+              {t(error.key, error.params)}
             </span>
           ))}
           {warnings.map((warning) => (
-            <span key={warning} className="text-amber-600">
-              {warning}
+            <span key={warning.key} className="text-amber-600">
+              {t(warning.key, warning.params)}
             </span>
           ))}
         </div>
       )}
-      <span className="text-muted-foreground">Ready</span>
+      <span className="text-muted-foreground">{t('statusBar.ready')}</span>
     </footer>
   );
 }

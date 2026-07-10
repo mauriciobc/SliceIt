@@ -3,8 +3,11 @@ import { useProjectStore } from '@/store/useProjectStore';
 import { computeCanvasGeometry } from '@/lib/geometry';
 import { fitText } from '@/lib/textFit';
 import { AlertTriangle } from 'lucide-react';
+import { useI18n } from '@/i18n';
+import type { ValidationMessage } from '@/types/infographic';
 
 export function TextWarnings() {
+  const { t } = useI18n();
   const canvas = useProjectStore((state) => state.canvas);
   const slices = useProjectStore((state) => state.slices);
   const typography = useProjectStore((state) => state.typography);
@@ -13,7 +16,7 @@ export function TextWarnings() {
   const geometry = useMemo(() => computeCanvasGeometry(canvas, slices), [canvas, slices]);
 
   const overflowMessages = useMemo(() => {
-    const messages: string[] = [];
+    const messages: ValidationMessage[] = [];
     for (let i = 0; i < slices.length; i++) {
       const slice = slices[i];
       const wedge = geometry.wedges[i];
@@ -36,10 +39,16 @@ export function TextWarnings() {
       });
 
       if (metricResult.overflow) {
-        messages.push(`Metric "${slice.metric}" may overflow slice ${i + 1}.`);
+        messages.push({
+          key: 'textWarnings.metricOverflow',
+          params: { metric: slice.metric, slice: i + 1 },
+        });
       }
       if (labelResult.overflow) {
-        messages.push(`Label "${slice.label}" may overflow slice ${i + 1}.`);
+        messages.push({
+          key: 'textWarnings.labelOverflow',
+          params: { label: slice.label, slice: i + 1 },
+        });
       }
     }
     return messages;
@@ -52,12 +61,12 @@ export function TextWarnings() {
     <div className="mt-4 space-y-2 rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-900 dark:bg-amber-950/30">
       <div className="flex items-center gap-2 text-sm font-medium text-amber-800 dark:text-amber-200">
         <AlertTriangle className="h-4 w-4" />
-        <span>Issues ({allMessages.length})</span>
+        <span>{t('issues.title', { count: allMessages.length })}</span>
       </div>
       <ul className="space-y-1 text-xs text-amber-700 dark:text-amber-300">
         {allMessages.map((message, index) => (
           <li key={index} className="leading-relaxed">
-            {message}
+            {t(message.key, message.params)}
           </li>
         ))}
       </ul>

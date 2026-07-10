@@ -6,16 +6,18 @@ import { TypographyPanel } from './TypographyPanel';
 import { SliceEditor } from './SliceEditor';
 import { ImportPanel } from './ImportPanel';
 import { TextWarnings } from './TextWarnings';
+import { useI18n } from '@/i18n';
 
 export function EditorPanel() {
+  const { t } = useI18n();
   return (
     <Tabs defaultValue="slices" className="flex h-full flex-col">
       <TabsList className="mb-4 grid w-full grid-cols-5">
-        <TabsTrigger value="slices">Slices</TabsTrigger>
-        <TabsTrigger value="canvas">Canvas</TabsTrigger>
-        <TabsTrigger value="palette">Palette</TabsTrigger>
-        <TabsTrigger value="center">Center</TabsTrigger>
-        <TabsTrigger value="typography">Type</TabsTrigger>
+        <TabsTrigger value="slices">{t('tabs.slices')}</TabsTrigger>
+        <TabsTrigger value="canvas">{t('tabs.canvas')}</TabsTrigger>
+        <TabsTrigger value="palette">{t('tabs.palette')}</TabsTrigger>
+        <TabsTrigger value="center">{t('tabs.center')}</TabsTrigger>
+        <TabsTrigger value="typography">{t('tabs.typography')}</TabsTrigger>
       </TabsList>
 
       <div className="flex-1 overflow-y-auto pr-1">

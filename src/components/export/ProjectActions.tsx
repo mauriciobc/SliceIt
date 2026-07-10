@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { serializeProject, validateProject } from '@/lib/projectSerializer';
 import { ProjectState } from '@/types/infographic';
 import { Save, FolderOpen } from 'lucide-react';
+import { useI18n } from '@/i18n';
 
 const RECENT_FILES_KEY = 'sliceit:recentFiles';
 
@@ -18,6 +19,7 @@ function addRecentFile(name: string) {
 }
 
 export function ProjectActions() {
+  const { t } = useI18n();
   const state = useProjectStore();
   const project = useMemo(
     () => ({
@@ -81,7 +83,7 @@ export function ProjectActions() {
     <div className="flex items-center gap-2">
       <Button variant="outline" size="sm" onClick={handleSave}>
         <Save className="mr-1 h-4 w-4" />
-        Save
+        {t('actions.save')}
       </Button>
       <Button
         variant="outline"
@@ -91,7 +93,7 @@ export function ProjectActions() {
       >
         <label htmlFor="load-project" className="cursor-pointer">
           <FolderOpen className="mr-1 h-4 w-4" />
-          Load
+          {t('actions.load')}
           <input
             ref={fileInputRef}
             id="load-project"
