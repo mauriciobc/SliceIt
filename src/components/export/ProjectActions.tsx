@@ -27,9 +27,10 @@ export function ProjectActions() {
       center: state.center,
       typography: state.typography,
       slices: state.slices,
+      uploadedIcons: state.uploadedIcons,
       selectedSliceId: null as string | null,
     }),
-    [state.version, state.canvas, state.palette, state.center, state.typography, state.slices]
+    [state.version, state.canvas, state.palette, state.center, state.typography, state.slices, state.uploadedIcons]
   );
   const loadProject = useProjectStore((s) => s.loadProject);
   const fileInputRef = useRef<HTMLInputElement>(null);

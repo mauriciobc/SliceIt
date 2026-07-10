@@ -48,6 +48,7 @@ export function createDefaultProject(): ProjectState {
       iconSize: 48,
     },
     slices: DEFAULT_SLICES.map((slice) => ({ ...slice, id: nanoid() })),
+    uploadedIcons: [],
     selectedSliceId: null,
   };
 }

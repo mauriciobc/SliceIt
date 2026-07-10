@@ -68,6 +68,7 @@ interface ProjectActions {
   addLogo(image: UploadedImage): void;
   removeLogo(id: string): void;
   addUploadedIcon(image: UploadedImage): void;
+  removeUploadedIcon(id: string): void;
   loadProject(project: ProjectState): void;
   resetProject(): void;
 }
@@ -163,10 +164,20 @@ export const useProjectStore = create<AppState & ProjectActions>((set) => ({
       draft.center.logos = draft.center.logos.filter((logo) => logo.id !== id);
     })),
 
-  addUploadedIcon: () => {
-    // Uploaded icons are stored in a separate registry; kept simple here.
-    // TODO: implement dedicated icon upload registry when needed.
-  },
+  addUploadedIcon: (image) =>
+    set((state) => produce(state, (draft: Draft<AppState>) => {
+      draft.uploadedIcons.push(image);
+    })),
+
+  removeUploadedIcon: (id) =>
+    set((state) => produce(state, (draft: Draft<AppState>) => {
+      draft.uploadedIcons = draft.uploadedIcons.filter((icon) => icon.id !== id);
+      for (const slice of draft.slices) {
+        if (slice.uploadedIconId === id) {
+          slice.uploadedIconId = undefined;
+        }
+      }
+    })),
 
   loadProject: (project) =>
     set((state) => produce(state, (draft: Draft<AppState>) => {
@@ -175,6 +186,7 @@ export const useProjectStore = create<AppState & ProjectActions>((set) => ({
       draft.center = project.center;
       draft.typography = project.typography;
       draft.slices = project.slices;
+      draft.uploadedIcons = project.uploadedIcons ?? [];
       draft.selectedSliceId = null;
       recomputeValidation(draft);
     })),
@@ -188,6 +200,7 @@ export const useProjectStore = create<AppState & ProjectActions>((set) => ({
         draft.center = fresh.center;
         draft.typography = fresh.typography;
         draft.slices = fresh.slices;
+        draft.uploadedIcons = fresh.uploadedIcons;
         draft.selectedSliceId = null;
         recomputeValidation(draft);
       })

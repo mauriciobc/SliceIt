@@ -66,6 +66,7 @@ const projectSchema = z.object({
   center: centerSchema,
   typography: typographySchema,
   slices: z.array(sliceSchema),
+  uploadedIcons: z.array(uploadedImageSchema).optional(),
 });
 
 export function validateProject(data: unknown): ProjectState {

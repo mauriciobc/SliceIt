@@ -71,6 +71,7 @@ export interface ProjectState {
   center: CenterConfig;
   typography: TypographyConfig;
   slices: Slice[];
+  uploadedIcons: UploadedImage[];
   selectedSliceId: string | null;
 }
 
@@ -125,17 +126,4 @@ export const GOOGLE_FONT_OPTIONS = [
   'Anton',
 ];
 
-export const BUILTIN_ICON_NAMES = [
-  'Cloud',
-  'Database',
-  'Server',
-  'HardDrive',
-  'Shield',
-  'Fingerprint',
-  'Activity',
-  'Network',
-  'GitBranch',
-  'BrainCircuit',
-  'Container',
-  'Globe',
-];
+
