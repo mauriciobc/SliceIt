@@ -49,6 +49,8 @@ export function createDefaultProject(): ProjectState {
       showIcons: false,
       iconSize: 48,
       metricLabelGap: 0.35,
+      iconVerticalPosition: 0.82,
+      iconMargin: 8,
     },
     slices: DEFAULT_SLICES.map((slice) => ({ ...slice, id: nanoid() })),
     uploadedIcons: [],

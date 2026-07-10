@@ -75,6 +75,7 @@ interface ProjectActions {
   removeUploadedIcon(id: string): void;
   loadProject(project: ProjectState): void;
   resetProject(): void;
+  resetIconSettings(): void;
 }
 
 export const useProjectStore = create<AppState & ProjectActions>((set) => ({
@@ -207,6 +208,18 @@ export const useProjectStore = create<AppState & ProjectActions>((set) => ({
         draft.uploadedIcons = fresh.uploadedIcons;
         draft.selectedSliceId = null;
         recomputeValidation(draft);
+      })
+    ),
+
+  resetIconSettings: () =>
+    set((state) =>
+      produce(state, (draft: Draft<AppState>) => {
+        draft.typography.iconVerticalPosition = 0.82;
+        draft.typography.iconMargin = 8;
+        for (const slice of draft.slices) {
+          slice.iconVerticalPosition = undefined;
+          slice.iconMargin = undefined;
+        }
       })
     ),
 }));

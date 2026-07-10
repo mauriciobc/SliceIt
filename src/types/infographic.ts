@@ -55,6 +55,8 @@ export interface Slice {
   color?: string;
   icon?: string;
   uploadedIconId?: string;
+  iconVerticalPosition?: number;
+  iconMargin?: number;
 }
 
 export interface TypographyConfig {
@@ -65,6 +67,8 @@ export interface TypographyConfig {
   showIcons: boolean;
   iconSize: number;
   metricLabelGap: number;
+  iconVerticalPosition: number;
+  iconMargin: number;
 }
 
 export interface ProjectState {

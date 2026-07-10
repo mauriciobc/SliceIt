@@ -13,7 +13,7 @@ export function TextWarnings() {
   const typography = useProjectStore((state) => state.typography);
   const errors = useProjectStore((state) => state.errors);
   const warnings = useProjectStore((state) => state.warnings);
-  const geometry = useMemo(() => computeCanvasGeometry(canvas, slices), [canvas, slices]);
+  const geometry = useMemo(() => computeCanvasGeometry(canvas, slices, typography), [canvas, slices, typography]);
 
   const overflowMessages = useMemo(() => {
     const messages: ValidationMessage[] = [];

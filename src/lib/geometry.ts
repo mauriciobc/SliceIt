@@ -1,4 +1,4 @@
-import { CanvasConfig, Dimensions, LayoutMode, Slice } from '@/types/infographic';
+import { CanvasConfig, Dimensions, LayoutMode, Slice, TypographyConfig } from '@/types/infographic';
 
 export interface Point {
   x: number;
@@ -68,7 +68,8 @@ export function buildWedgePath(
 
 export function computeCanvasGeometry(
   canvas: CanvasConfig,
-  slices: Slice[]
+  slices: Slice[],
+  typography?: TypographyConfig
 ): CanvasGeometry {
   const { width, height } = canvas.dimensions;
   const segmentExtension = canvas.segmentExtension ?? 1.3;
@@ -113,13 +114,16 @@ export function computeCanvasGeometry(
       outerRadiusX,
       outerRadiusY
     );
+    const sliceMargin = slice.iconMargin ?? typography?.iconMargin ?? 8;
+    const iconSize = typography?.iconSize ?? 48;
+    const inflate = Math.max(1, sliceMargin + iconSize / 2);
     const clipPath = buildWedgePath(
       startAngle,
       endAngle,
       innerRadius,
       outerRadiusX,
       outerRadiusY,
-      1
+      inflate
     );
 
     const midRadius = innerRadius + (R - innerRadius) * textPadding;

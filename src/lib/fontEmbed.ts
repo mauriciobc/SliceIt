@@ -49,6 +49,7 @@ export async function embedGoogleFonts(
           const dataUrl = await fontFileToDataUrl(url);
           result = result.replace(`url(${url})`, `url(${dataUrl})`);
         } catch {
+          // Font loading failure is non-critical; skip this URL
         }
       }
       return result;
