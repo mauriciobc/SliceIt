@@ -64,6 +64,7 @@ export interface TypographyConfig {
   labelColor: string;
   showIcons: boolean;
   iconSize: number;
+  metricLabelGap: number;
 }
 
 export interface ProjectState {
@@ -125,12 +126,44 @@ export function updateDimensionsForAspectRatio(
 
 export const GOOGLE_FONT_OPTIONS = [
   'Inter',
+  'Roboto',
+  'Open Sans',
+  'Lato',
   'Montserrat',
   'Oswald',
   'Roboto Condensed',
   'Poppins',
   'Bebas Neue',
   'Anton',
+  'Raleway',
+  'Nunito',
+  'Nunito Sans',
+  'Source Sans 3',
+  'PT Sans',
+  'Work Sans',
+  'Rubik',
+  'Manrope',
+  'DM Sans',
+  'Karla',
+  'Merriweather',
+  'Playfair Display',
+  'Lora',
+  'PT Serif',
+  'Libre Baskerville',
+  'Crimson Text',
+  'Ubuntu',
+  'Fjalla One',
+  'Archivo',
+  'Archivo Narrow',
+  'Barlow',
+  'Barlow Condensed',
+  'Teko',
+  'Abril Fatface',
+  'Bitter',
+  'Inconsolata',
+  'Space Grotesk',
+  'Cairo',
+  'Noto Sans',
 ];
 
 

@@ -1,13 +1,5 @@
 import { hsl, rgb } from 'd3-color';
-
-function interpolateHsl(start: ReturnType<typeof hsl>, end: ReturnType<typeof hsl>) {
-  return (t: number) => {
-    const h = start.h + (end.h - start.h) * t;
-    const s = start.s + (end.s - start.s) * t;
-    const l = start.l + (end.l - start.l) * t;
-    return hsl(h, s, l).formatHex();
-  };
-}
+import { scaleLinear } from 'd3-scale';
 import { PaletteConfig, Slice } from '@/types/infographic';
 
 export function generateSliceColors(
@@ -22,10 +14,10 @@ export function generateSliceColors(
   const count = slices.length;
 
   if (palette.mode === 'gradient') {
-    const t = count === 1 ? 0 : index / (count - 1);
-    const start = hsl(palette.gradientStart);
-    const end = hsl(palette.gradientEnd);
-    return interpolateHsl(start, end)(t);
+    const colorScale = scaleLinear<string>()
+      .domain([0, Math.max(count - 1, 1)])
+      .range([palette.gradientStart, palette.gradientEnd]);
+    return colorScale(index);
   }
 
   // Single color mode: distribute analogous hues around the wheel
