@@ -21,8 +21,8 @@ export function CenterWheel({ geometry, centerConfig, centerColor }: CenterWheel
     logoPlacement === 'top'
       ? -innerRadius * 0.55
       : logoPlacement === 'bottom'
-        ? innerRadius * 0.55
-        : 0;
+        ? innerRadius * 0.65
+        : innerRadius * 0.65;
 
   return (
     <g>

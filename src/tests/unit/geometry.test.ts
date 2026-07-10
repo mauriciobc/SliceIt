@@ -7,6 +7,8 @@ function createCanvas(width: number, height: number): CanvasConfig {
     aspectRatio: 'Custom',
     dimensions: { width, height },
     backgroundColor: '#ffffff',
+    segmentExtension: 1.3,
+    textPadding: 0.4,
   };
 }
 
@@ -55,5 +57,11 @@ describe('geometry', () => {
       expect(distance).toBeGreaterThanOrEqual(wedge.innerRadius * 0.95);
       expect(distance).toBeLessThanOrEqual(wedge.outerRadius * 1.05);
     }
+  });
+
+  it('narrows safeBounds width with more slices', () => {
+    const wide = computeCanvasGeometry(createCanvas(1080, 1080), createSlices(4));
+    const narrow = computeCanvasGeometry(createCanvas(1080, 1080), createSlices(12));
+    expect(narrow.wedges[0].safeBounds.width).toBeLessThan(wide.wedges[0].safeBounds.width);
   });
 });

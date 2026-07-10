@@ -19,6 +19,8 @@ export function createDefaultProject(): ProjectState {
       aspectRatio: '1:1',
       dimensions: { width: 1080, height: 1080 },
       backgroundColor: '#ffffff',
+      segmentExtension: 1.3,
+      textPadding: 0.4,
     },
     palette: {
       mode: 'single',

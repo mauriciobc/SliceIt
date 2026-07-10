@@ -10,6 +10,8 @@ const canvasSchema = z.object({
   aspectRatio: z.enum(['1:1', '4:5', '16:9', '9:16', '4:3', 'Custom']),
   dimensions: dimensionsSchema,
   backgroundColor: z.string(),
+  segmentExtension: z.number().optional(),
+  textPadding: z.number().optional(),
 });
 
 const paletteSchema = z.object({
