@@ -3,16 +3,10 @@ import { useProjectStore } from '@/store/useProjectStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { BUILTIN_ICON_NAMES, Slice } from '@/types/infographic';
-import { getIconComponent } from '@/lib/icons';
+import { Slice } from '@/types/infographic';
+import { createUploadedImage } from '@/lib/fileUpload';
+import { IconPicker } from '@/components/editor/IconPicker';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -24,9 +18,18 @@ export function SliceEditor() {
   const updateSlice = useProjectStore((state) => state.updateSlice);
   const reorderSlices = useProjectStore((state) => state.reorderSlices);
   const setSelectedSliceId = useProjectStore((state) => state.setSelectedSliceId);
+  const uploadedIcons = useProjectStore((state) => state.uploadedIcons);
+  const addUploadedIcon = useProjectStore((state) => state.addUploadedIcon);
 
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const selectedSlice = slices.find((s) => s.id === selectedSliceId);
+
+  const handleIconUpload = async (file: File) => {
+    if (!['image/svg+xml', 'image/png'].includes(file.type)) return;
+    const image = await createUploadedImage(file);
+    addUploadedIcon(image);
+    updateSlice(selectedSliceId!, { uploadedIconId: image.id, icon: undefined });
+  };
 
   const handleDragStart = (id: string) => {
     setDraggedId(id);
@@ -167,6 +170,16 @@ interface SliceFormProps {
 }
 
 function SliceForm({ slice, onUpdate }: SliceFormProps) {
+  const uploadedIcons = useProjectStore((state) => state.uploadedIcons);
+  const addUploadedIcon = useProjectStore((state) => state.addUploadedIcon);
+
+  const handleIconUpload = async (file: File) => {
+    if (!['image/svg+xml', 'image/png'].includes(file.type)) return;
+    const image = await createUploadedImage(file);
+    addUploadedIcon(image);
+    onUpdate({ uploadedIconId: image.id, icon: undefined });
+  };
+
   return (
     <div className="space-y-3">
       <div className="space-y-2">
@@ -207,25 +220,14 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="slice-icon">Icon</Label>
-        <Select value={slice.icon ?? ''} onValueChange={(v) => onUpdate({ icon: v || undefined })}>
-          <SelectTrigger id="slice-icon">
-            <SelectValue placeholder="Select an icon" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">None</SelectItem>
-            {BUILTIN_ICON_NAMES.map((name) => {
-              const Icon = getIconComponent(name);
-              return (
-                <SelectItem key={name} value={name}>
-                  <span className="flex items-center gap-2">
-                    {Icon && <Icon className="h-4 w-4" />}
-                    {name}
-                  </span>
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
+        <IconPicker
+          value={slice.icon}
+          uploadedValue={slice.uploadedIconId}
+          uploadedIcons={uploadedIcons}
+          onSelectBuiltin={(name) => onUpdate({ icon: name, uploadedIconId: undefined })}
+          onSelectUploaded={(id) => onUpdate({ uploadedIconId: id, icon: undefined })}
+          onUpload={handleIconUpload}
+        />
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { WedgeGeometry, CanvasGeometry } from '@/lib/geometry';
 import { fitText } from '@/lib/textFit';
 import { Slice, TypographyConfig } from '@/types/infographic';
 import { iconComponents } from '@/lib/icons';
+import { useProjectStore } from '@/store/useProjectStore';
 import { LucideProps } from 'lucide-react';
 
 interface SliceRendererProps {
@@ -63,8 +64,13 @@ export function SliceRenderer({
   );
 
   const metricY = wedge.safeBounds.y + wedge.safeBounds.height * 0.25;
-  const labelY = wedge.safeBounds.y + wedge.safeBounds.height * 0.6;
+  const labelY = metricY + wedge.safeBounds.height * typography.metricLabelGap;
   const iconY = wedge.safeBounds.y + wedge.safeBounds.height * 0.82;
+
+  const uploadedIcons = useProjectStore((state) => state.uploadedIcons);
+  const uploadedIcon = slice.uploadedIconId
+    ? uploadedIcons.find((icon) => icon.id === slice.uploadedIconId)
+    : undefined;
 
   const iconName = slice.icon;
 
@@ -117,7 +123,19 @@ export function SliceRenderer({
           ))}
         </text>
 
-        {showIcon && iconName && <SliceIcon name={iconName} x={wedge.centroid.x} y={iconY} size={typography.iconSize} color={typography.labelColor} />}
+        {showIcon && uploadedIcon && (
+          <image
+            href={uploadedIcon.dataUrl}
+            x={wedge.centroid.x - typography.iconSize / 2}
+            y={iconY - typography.iconSize / 2}
+            width={typography.iconSize}
+            height={typography.iconSize}
+            preserveAspectRatio="xMidYMid meet"
+          />
+        )}
+        {showIcon && !uploadedIcon && iconName && (
+          <SliceIcon name={iconName} x={wedge.centroid.x} y={iconY} size={typography.iconSize} color={typography.labelColor} />
+        )}
       </g>
     </g>
   );
