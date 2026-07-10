@@ -46,6 +46,7 @@ export function createDefaultProject(): ProjectState {
       labelColor: '#ffffff',
       showIcons: false,
       iconSize: 48,
+      metricLabelGap: 0.35,
     },
     slices: DEFAULT_SLICES.map((slice) => ({ ...slice, id: nanoid() })),
     selectedSliceId: null,

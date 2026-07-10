@@ -11,6 +11,10 @@ import { cn } from '@/lib/utils';
 
 export function ImportPanel() {
   const setSlices = useProjectStore((state) => state.setSlices);
+  const setCenter = useProjectStore((state) => state.setCenter);
+  const setPalette = useProjectStore((state) => state.setPalette);
+  const setCanvas = useProjectStore((state) => state.setCanvas);
+  const setTypography = useProjectStore((state) => state.setTypography);
 
   const processFile = useCallback(
     async (file: File) => {
@@ -29,6 +33,18 @@ export function ImportPanel() {
             }));
             setSlices(slices);
           }
+          if (data.center && typeof data.center === 'object') {
+            setCenter(data.center as Partial<typeof data.center>);
+          }
+          if (data.palette && typeof data.palette === 'object') {
+            setPalette(data.palette as Partial<typeof data.palette>);
+          }
+          if (data.canvas && typeof data.canvas === 'object') {
+            setCanvas(data.canvas as Partial<typeof data.canvas>);
+          }
+          if (data.typography && typeof data.typography === 'object') {
+            setTypography(data.typography as Partial<typeof data.typography>);
+          }
         } catch {
           // ignore invalid JSON
         }
@@ -37,7 +53,7 @@ export function ImportPanel() {
         setSlices(slices);
       }
     },
-    [setSlices]
+    [setSlices, setCenter, setPalette, setCanvas, setTypography]
   );
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

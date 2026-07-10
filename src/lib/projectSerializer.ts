@@ -48,6 +48,7 @@ const typographySchema = z.object({
   labelColor: z.string(),
   showIcons: z.boolean(),
   iconSize: z.number(),
+  metricLabelGap: z.number().optional(),
 });
 
 const sliceSchema = z.object({

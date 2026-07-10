@@ -66,6 +66,21 @@ export function TypographyPanel() {
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor="metric-label-gap">Metric\u2013Label Gap</Label>
+        <Slider
+          id="metric-label-gap"
+          value={[typography.metricLabelGap]}
+          min={0.05}
+          max={0.8}
+          step={0.01}
+          onValueChange={([value]) => setTypography({ metricLabelGap: value })}
+        />
+        <div className="text-right text-xs text-muted-foreground">
+          {typography.metricLabelGap.toFixed(2)}
+        </div>
+      </div>
+
+      <div className="space-y-2">
         <Label htmlFor="icon-size">Icon Size</Label>
         <Slider
           id="icon-size"

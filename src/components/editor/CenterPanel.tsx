@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
 import { GOOGLE_FONT_OPTIONS, LogoPlacement } from '@/types/infographic';
 
 export function CenterPanel() {
@@ -130,6 +131,40 @@ export function CenterPanel() {
             />
           </div>
         </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="center-color-auto">Auto Center Color</Label>
+          <Switch
+            id="center-color-auto"
+            checked={center.centerColorOverride === undefined}
+            onCheckedChange={(checked) =>
+              setCenter({ centerColorOverride: checked ? undefined : '#e5e7eb' })
+            }
+          />
+        </div>
+        {center.centerColorOverride !== undefined && (
+          <div className="space-y-2">
+            <Label htmlFor="center-color">Center Color</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="center-color"
+                type="color"
+                value={center.centerColorOverride}
+                onChange={(e) => setCenter({ centerColorOverride: e.target.value })}
+                className="h-9 w-14 px-1 py-1"
+              />
+              <Input
+                type="text"
+                value={center.centerColorOverride}
+                onChange={(e) => setCenter({ centerColorOverride: e.target.value })}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">
