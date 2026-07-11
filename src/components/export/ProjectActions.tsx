@@ -28,11 +28,12 @@ export function ProjectActions() {
       palette: state.palette,
       center: state.center,
       typography: state.typography,
+      sliceStyle: state.sliceStyle,
       slices: state.slices,
       uploadedIcons: state.uploadedIcons,
       selectedSliceId: null as string | null,
     }),
-    [state.version, state.canvas, state.palette, state.center, state.typography, state.slices, state.uploadedIcons]
+    [state.version, state.canvas, state.palette, state.center, state.typography, state.sliceStyle, state.slices, state.uploadedIcons]
   );
   const loadProject = useProjectStore((s) => s.loadProject);
   const fileInputRef = useRef<HTMLInputElement>(null);

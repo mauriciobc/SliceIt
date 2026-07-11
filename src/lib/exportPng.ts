@@ -1,7 +1,7 @@
 import { toPng } from 'html-to-image';
 import { saveAs } from 'file-saver';
 import { useProjectStore } from '@/store/useProjectStore';
-import { embedGoogleFonts } from '@/lib/fontEmbed';
+import { embedExportFonts } from './exportFonts';
 
 export type PngResolution = '1x' | '2x' | '4x' | 'social' | 'hd' | '4k';
 
@@ -45,15 +45,9 @@ export async function exportPng(resolution: PngResolution = '2x') {
     targetPixelRatio = targetShortEdge / shortEdge;
   }
 
-  const { center, typography } = useProjectStore.getState();
+  const state = useProjectStore.getState();
   await document.fonts.ready;
-  await embedGoogleFonts(svg, [
-    center.titleFont,
-    center.subtitleFont,
-    center.captionFont,
-    typography.metricFont,
-    typography.labelFont,
-  ]);
+  await embedExportFonts(svg, state);
 
   const dataUrl = await toPng(svg, {
     pixelRatio: targetPixelRatio,

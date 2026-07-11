@@ -59,6 +59,25 @@ describe('geometry', () => {
     }
   });
 
+  it('icon ring is concentric and proportional to the wedge ellipse', () => {
+    const geometry = computeCanvasGeometry(createCanvas(1920, 1080), createSlices(8));
+    const targetAspect = geometry.outerRadiusY / geometry.outerRadiusX;
+    for (const wedge of geometry.wedges) {
+      const angle = (wedge.startAngle + wedge.endAngle) / 2;
+      const sinA = Math.sin(angle);
+      const cosA = Math.cos(angle);
+
+      const outerDx = wedge.iconOuterPoint.x;
+      const outerDy = wedge.iconOuterPoint.y;
+
+      if (Math.abs(sinA) > 0.01 && Math.abs(cosA) > 0.01) {
+        const rx = Math.abs(outerDx / sinA);
+        const ry = Math.abs(outerDy / cosA);
+        expect(ry / rx).toBeCloseTo(targetAspect, 2);
+      }
+    }
+  });
+
   it('narrows safeBounds width with more slices', () => {
     const wide = computeCanvasGeometry(createCanvas(1080, 1080), createSlices(4));
     const narrow = computeCanvasGeometry(createCanvas(1080, 1080), createSlices(12));

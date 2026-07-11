@@ -1,5 +1,6 @@
 import { ProjectState } from '@/types/infographic';
 import { z } from 'zod';
+import { createDefaultProject } from './sampleData';
 
 const dimensionsSchema = z.object({
   width: z.number().positive(),
@@ -12,6 +13,9 @@ const canvasSchema = z.object({
   backgroundColor: z.string(),
   segmentExtension: z.number().optional(),
   textPadding: z.number().optional(),
+  innerRadiusRatio: z.number().optional(),
+  showDividers: z.boolean().optional(),
+  dividerWidth: z.number().optional(),
 });
 
 const paletteSchema = z.object({
@@ -53,6 +57,10 @@ const typographySchema = z.object({
   metricLabelGap: z.number().optional(),
   iconVerticalPosition: z.number().optional(),
   iconMargin: z.number().optional(),
+  iconPlacement: z.enum(['inner', 'outer']).optional(),
+  rotateText: z.boolean().optional(),
+  metricFontWeight: z.number().optional(),
+  textAlign: z.enum(['start', 'middle', 'end']).optional(),
 });
 
 const sliceSchema = z.object({
@@ -66,19 +74,36 @@ const sliceSchema = z.object({
   iconMargin: z.number().optional(),
 });
 
+const sliceStyleSchema = z.object({
+  fillMode: z.enum(['solid', 'radial']),
+  gradientIntensity: z.number(),
+}).optional();
+
 const projectSchema = z.object({
   version: z.number(),
   canvas: canvasSchema,
   palette: paletteSchema,
   center: centerSchema,
   typography: typographySchema,
+  sliceStyle: sliceStyleSchema,
   slices: z.array(sliceSchema),
   uploadedIcons: z.array(uploadedImageSchema).optional(),
 });
 
 export function validateProject(data: unknown): ProjectState {
   const parsed = projectSchema.parse(data);
-  return parsed as ProjectState;
+  const defaults = createDefaultProject();
+  return {
+    ...defaults,
+    ...parsed,
+    canvas: { ...defaults.canvas, ...parsed.canvas },
+    palette: { ...defaults.palette, ...parsed.palette },
+    center: { ...defaults.center, ...parsed.center },
+    typography: { ...defaults.typography, ...parsed.typography },
+    sliceStyle: parsed.sliceStyle ?? defaults.sliceStyle,
+    uploadedIcons: parsed.uploadedIcons ?? defaults.uploadedIcons,
+    selectedSliceId: null,
+  };
 }
 
 export function serializeProject(state: ProjectState): string {

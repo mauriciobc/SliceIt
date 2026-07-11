@@ -1,6 +1,8 @@
 import { useProjectStore } from '@/store/useProjectStore';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
 import {
   Select,
   SelectContent,
@@ -102,6 +104,45 @@ export function CanvasPanel() {
         />
         <p className="text-xs text-muted-foreground">How far segments extend beyond canvas (1.0 = to edge, 1.5 = 50% bleed)</p>
       </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="inner-radius-ratio">
+          Center Size: {((canvas.innerRadiusRatio ?? 0.18) * 100).toFixed(0)}%
+        </Label>
+        <Slider
+          id="inner-radius-ratio"
+          value={[canvas.innerRadiusRatio ?? 0.18]}
+          min={0.1}
+          max={0.4}
+          step={0.01}
+          onValueChange={([value]) => setCanvas({ innerRadiusRatio: value })}
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <Label htmlFor="show-dividers">Show Dividers</Label>
+        <Switch
+          id="show-dividers"
+          checked={canvas.showDividers ?? false}
+          onCheckedChange={(checked) => setCanvas({ showDividers: checked })}
+        />
+      </div>
+
+      {(canvas.showDividers ?? false) && (
+        <div className="space-y-2">
+          <Label htmlFor="divider-width">
+            Divider Width: {canvas.dividerWidth ?? 2}px
+          </Label>
+          <Slider
+            id="divider-width"
+            value={[canvas.dividerWidth ?? 2]}
+            min={1}
+            max={8}
+            step={1}
+            onValueChange={([value]) => setCanvas({ dividerWidth: value })}
+          />
+        </div>
+      )}
 
       <div className="space-y-2">
         <Label htmlFor="text-padding">

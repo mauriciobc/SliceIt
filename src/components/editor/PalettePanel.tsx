@@ -1,6 +1,7 @@
 import { useProjectStore } from '@/store/useProjectStore';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 import {
   Select,
   SelectContent,
@@ -8,13 +9,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { PaletteMode } from '@/types/infographic';
+import { PaletteMode, SliceStyleMode } from '@/types/infographic';
 import { useI18n } from '@/i18n';
 
 export function PalettePanel() {
   const { t } = useI18n();
   const palette = useProjectStore((state) => state.palette);
   const setPalette = useProjectStore((state) => state.setPalette);
+  const sliceStyle = useProjectStore((state) => state.sliceStyle);
+  const setSliceStyle = useProjectStore((state) => state.setSliceStyle);
 
   return (
     <div className="space-y-4">
@@ -99,6 +102,41 @@ export function PalettePanel() {
           {t('palette.manualHint')}
         </p>
       )}
+
+      <div className="border-t pt-4 mt-4">
+        <h4 className="text-sm font-medium mb-3">Slice Style</h4>
+        <div className="flex items-center justify-between mb-3">
+          <Label>Fill Mode</Label>
+          <Select
+            value={sliceStyle.fillMode}
+            onValueChange={(v) => setSliceStyle({ fillMode: v as SliceStyleMode })}
+          >
+            <SelectTrigger className="w-[120px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="solid">Solid</SelectItem>
+              <SelectItem value="radial">Radial</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {sliceStyle.fillMode === 'radial' && (
+          <div className="space-y-2">
+            <Label htmlFor="gradient-intensity">
+              Gradient Intensity: {sliceStyle.gradientIntensity.toFixed(2)}
+            </Label>
+            <Slider
+              id="gradient-intensity"
+              value={[sliceStyle.gradientIntensity]}
+              min={0}
+              max={1}
+              step={0.05}
+              onValueChange={([value]) => setSliceStyle({ gradientIntensity: value })}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

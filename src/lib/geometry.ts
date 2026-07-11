@@ -13,6 +13,8 @@ export interface WedgeGeometry {
   innerRadius: number;
   outerRadius: number;
   centroid: Point;
+  iconInnerPoint: Point;
+  iconOuterPoint: Point;
   path: string;
   clipPath: string;
   safeBounds: { x: number; y: number; width: number; height: number };
@@ -78,7 +80,7 @@ export function computeCanvasGeometry(
   const centerX = width / 2;
   const centerY = height / 2;
 
-  const innerRadius = Math.min(width, height) * 0.18;
+  const innerRadius = Math.min(width, height) * (canvas.innerRadiusRatio ?? 0.18);
 
   let outerRadiusX: number;
   let outerRadiusY: number;
@@ -143,6 +145,12 @@ export function computeCanvasGeometry(
       height: safeHeight0 * scaleY,
     };
 
+    const innerR = innerRadius + inflate;
+    const outerRX = Math.max(innerR, width / 2 - inflate);
+    const outerRY = Math.max(innerR, outerRX * (outerRadiusY / outerRadiusX));
+    const iconInnerPoint = ringPoint(midAngle, innerR, innerR);
+    const iconOuterPoint = ringPoint(midAngle, outerRX, outerRY);
+
     return {
       id: slice.id,
       index,
@@ -151,6 +159,8 @@ export function computeCanvasGeometry(
       innerRadius,
       outerRadius: R,
       centroid,
+      iconInnerPoint,
+      iconOuterPoint,
       path,
       clipPath,
       safeBounds,

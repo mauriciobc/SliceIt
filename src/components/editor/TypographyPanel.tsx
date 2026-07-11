@@ -10,7 +10,8 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
-import { RotateCcw } from 'lucide-react';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { AlignLeft, AlignCenter, AlignRight, RotateCcw } from 'lucide-react';
 import { GOOGLE_FONT_OPTIONS } from '@/types/infographic';
 
 export function TypographyPanel() {
@@ -59,6 +60,52 @@ export function TypographyPanel() {
         </div>
       </div>
 
+      <div className="space-y-2">
+        <Label htmlFor="metric-font-weight">
+          Metric Weight: {typography.metricFontWeight ?? 700}
+        </Label>
+        <Slider
+          id="metric-font-weight"
+          value={[typography.metricFontWeight ?? 700]}
+          min={400}
+          max={900}
+          step={100}
+          onValueChange={([value]) => setTypography({ metricFontWeight: value })}
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <Label htmlFor="rotate-text">Rotate Text Radially</Label>
+        <Switch
+          id="rotate-text"
+          checked={typography.rotateText ?? false}
+          onCheckedChange={(checked) => setTypography({ rotateText: checked })}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Text Alignment</Label>
+        <ToggleGroup
+          type="single"
+          value={typography.textAlign ?? 'middle'}
+          onValueChange={(value) => {
+            if (value) setTypography({ textAlign: value as 'start' | 'middle' | 'end' });
+          }}
+          variant="outline"
+          size="sm"
+        >
+          <ToggleGroupItem value="start" aria-label="Align left">
+            <AlignLeft className="h-4 w-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="middle" aria-label="Align center">
+            <AlignCenter className="h-4 w-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="end" aria-label="Align right">
+            <AlignRight className="h-4 w-4" />
+          </ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+
       <div className="flex items-center justify-between">
         <Label htmlFor="show-icons">Show Icons</Label>
         <Switch
@@ -68,8 +115,26 @@ export function TypographyPanel() {
         />
       </div>
 
+      <div className="flex items-center justify-between">
+        <Label>Icon Placement</Label>
+        <Select
+          value={typography.iconPlacement ?? 'outer'}
+          onValueChange={(v) => setTypography({ iconPlacement: v as 'inner' | 'outer' })}
+        >
+          <SelectTrigger className="w-[120px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="inner">Inner</SelectItem>
+            <SelectItem value="outer">Outer</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="space-y-2">
-        <Label htmlFor="metric-label-gap">Metric\u2013Label Gap</Label>
+        <Label htmlFor="metric-label-gap">
+          Metric–Label Gap
+        </Label>
         <Slider
           id="metric-label-gap"
           value={[typography.metricLabelGap]}
@@ -100,7 +165,7 @@ export function TypographyPanel() {
 
       <div className="space-y-2">
         <Label htmlFor="icon-vertical-position">
-          Icon Position: {typography.iconVerticalPosition.toFixed(2)}
+          Icon Offset: {typography.iconVerticalPosition.toFixed(2)}
         </Label>
         <Slider
           id="icon-vertical-position"
@@ -111,7 +176,7 @@ export function TypographyPanel() {
           onValueChange={([value]) => setTypography({ iconVerticalPosition: value })}
         />
         <div className="text-right text-xs text-muted-foreground">
-          {typography.iconVerticalPosition < 0.5 ? 'Inner' : typography.iconVerticalPosition > 0.5 ? 'Outer' : 'Center'}
+          Fine position within selected side (Inner/Outer)
         </div>
       </div>
 
