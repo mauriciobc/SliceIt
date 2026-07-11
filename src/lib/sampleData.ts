@@ -2,14 +2,14 @@ import { ProjectState } from '@/types/infographic';
 import { nanoid } from './nanoid';
 
 export const DEFAULT_SLICES = [
-  { metric: '46M', label: 'API CALLS PROCESSED', color: '#4CC9F0' },
-  { metric: '12K', label: 'INCIDENTS RESOLVED', color: '#4895EF' },
-  { metric: '5.1M', label: 'REQUESTS HANDLED', color: '#4361EE' },
-  { metric: '98.9%', label: 'UPTIME ACHIEVED', color: '#3F37C9' },
-  { metric: '2.4M', label: 'LOG EVENTS INGESTED', color: '#3A0CA3' },
-  { metric: '850K', label: 'USERS AUTHENTICATED', color: '#7209B7' },
-  { metric: '14TB', label: 'DATA TRANSFERRED', color: '#F72585' },
-  { metric: '320K', label: 'ALERTS TRIGGERED', color: '#FF006E' },
+  { metric: '46M', label: 'API CALLS PROCESSED', color: '#4CC9F0', icon: 'Globe' },
+  { metric: '12K', label: 'INCIDENTS RESOLVED', color: '#4895EF', icon: 'ShieldAlert' },
+  { metric: '5.1M', label: 'REQUESTS HANDLED', color: '#4361EE', icon: 'Webhook' },
+  { metric: '98.9%', label: 'UPTIME ACHIEVED', color: '#3F37C9', icon: 'Activity' },
+  { metric: '2.4M', label: 'LOG EVENTS INGESTED', color: '#3A0CA3', icon: 'ScrollText' },
+  { metric: '850K', label: 'USERS AUTHENTICATED', color: '#7209B7', icon: 'Fingerprint' },
+  { metric: '14TB', label: 'DATA TRANSFERRED', color: '#F72585', icon: 'Database' },
+  { metric: '320K', label: 'ALERTS TRIGGERED', color: '#FF006E', icon: 'Bell' },
 ];
 
 export function createDefaultProject(): ProjectState {
@@ -21,6 +21,13 @@ export function createDefaultProject(): ProjectState {
       backgroundColor: '#ffffff',
       segmentExtension: 1.3,
       textPadding: 0.4,
+      innerRadiusRatio: 0.18,
+      showDividers: false,
+      dividerWidth: 2,
+    },
+    sliceStyle: {
+      fillMode: 'solid',
+      gradientIntensity: 0.4,
     },
     palette: {
       mode: 'single',
@@ -46,11 +53,15 @@ export function createDefaultProject(): ProjectState {
       labelFont: 'Inter',
       metricColor: '#ffffff',
       labelColor: '#ffffff',
-      showIcons: false,
+      showIcons: true,
       iconSize: 48,
       metricLabelGap: 0.35,
       iconVerticalPosition: 0.82,
       iconMargin: 8,
+      iconPlacement: 'outer',
+      rotateText: false,
+      metricFontWeight: 700,
+      textAlign: 'middle',
     },
     slices: DEFAULT_SLICES.map((slice) => ({ ...slice, id: nanoid() })),
     uploadedIcons: [],

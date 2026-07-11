@@ -59,9 +59,68 @@ describe('geometry', () => {
     }
   });
 
+  it('icon ring is concentric and proportional to the wedge ellipse', () => {
+    const geometry = computeCanvasGeometry(createCanvas(1920, 1080), createSlices(8));
+    const targetAspect = geometry.outerRadiusY / geometry.outerRadiusX;
+    for (const wedge of geometry.wedges) {
+      const angle = (wedge.startAngle + wedge.endAngle) / 2;
+      const sinA = Math.sin(angle);
+      const cosA = Math.cos(angle);
+
+      const outerDx = wedge.iconOuterPoint.x;
+      const outerDy = wedge.iconOuterPoint.y;
+
+      if (Math.abs(sinA) > 0.01 && Math.abs(cosA) > 0.01) {
+        const rx = Math.abs(outerDx / sinA);
+        const ry = Math.abs(outerDy / cosA);
+        expect(ry / rx).toBeCloseTo(targetAspect, 2);
+      }
+    }
+  });
+
   it('narrows safeBounds width with more slices', () => {
     const wide = computeCanvasGeometry(createCanvas(1080, 1080), createSlices(4));
     const narrow = computeCanvasGeometry(createCanvas(1080, 1080), createSlices(12));
     expect(narrow.wedges[0].safeBounds.width).toBeLessThan(wide.wedges[0].safeBounds.width);
+  });
+
+  it('maps landscape radii to scaled half-dimensions (X from width, Y from height)', () => {
+    const geometry = computeCanvasGeometry(createCanvas(1920, 1080), createSlices(8));
+    expect(geometry.outerRadiusX).toBeCloseTo((1920 / 2) * 1.3, 5);
+    expect(geometry.outerRadiusY).toBeCloseTo((1080 / 2) * 1.3, 5);
+  });
+
+  it('maps portrait radii to scaled half-dimensions (X from width, Y from height)', () => {
+    const geometry = computeCanvasGeometry(createCanvas(1080, 1920), createSlices(8));
+    expect(geometry.outerRadiusX).toBeCloseTo((1080 / 2) * 1.3, 5);
+    expect(geometry.outerRadiusY).toBeCloseTo((1920 / 2) * 1.3, 5);
+  });
+
+  it('clamps square radii to the smaller scaled half-dimension', () => {
+    const geometry = computeCanvasGeometry(createCanvas(1080, 1080), createSlices(8));
+    const expected = (1080 / 2) * 1.3;
+    expect(geometry.outerRadiusX).toBeCloseTo(expected, 5);
+    expect(geometry.outerRadiusY).toBeCloseTo(expected, 5);
+  });
+
+  it('applies inflate to the wedge clipPath but not the base path', () => {
+    const geometry = computeCanvasGeometry(createCanvas(1080, 1080), createSlices(8));
+    for (const wedge of geometry.wedges) {
+      expect(wedge.clipPath).not.toBe(wedge.path);
+    }
+  });
+
+  it('derives icon ring radii from inner radius + inflate', () => {
+    const geometry = computeCanvasGeometry(createCanvas(1080, 1080), createSlices(8));
+    const innerRadius = Math.min(1080, 1080) * 0.18;
+    const inflate = Math.max(1, 8 + 48 / 2);
+    const innerR = innerRadius + inflate;
+    const outerRX = Math.max(innerR, 1080 / 2 - inflate);
+    for (const wedge of geometry.wedges) {
+      const dIn = Math.hypot(wedge.iconInnerPoint.x, wedge.iconInnerPoint.y);
+      const dOut = Math.hypot(wedge.iconOuterPoint.x, wedge.iconOuterPoint.y);
+      expect(dIn).toBeCloseTo(innerR, 1);
+      expect(dOut).toBeCloseTo(outerRX, 1);
+    }
   });
 });

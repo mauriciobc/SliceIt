@@ -13,6 +13,16 @@ export interface CanvasConfig {
   backgroundColor: string;
   segmentExtension: number;
   textPadding: number;
+  innerRadiusRatio?: number;
+  showDividers?: boolean;
+  dividerWidth?: number;
+}
+
+export type SliceStyleMode = 'solid' | 'radial';
+
+export interface SliceStyleConfig {
+  fillMode: SliceStyleMode;
+  gradientIntensity: number;
 }
 
 export type PaletteMode = 'single' | 'gradient' | 'manual';
@@ -69,6 +79,10 @@ export interface TypographyConfig {
   metricLabelGap: number;
   iconVerticalPosition: number;
   iconMargin: number;
+  iconPlacement?: 'inner' | 'outer';
+  rotateText?: boolean;
+  metricFontWeight?: number;
+  textAlign?: 'start' | 'middle' | 'end';
 }
 
 export interface ProjectState {
@@ -77,6 +91,7 @@ export interface ProjectState {
   palette: PaletteConfig;
   center: CenterConfig;
   typography: TypographyConfig;
+  sliceStyle: SliceStyleConfig;
   slices: Slice[];
   uploadedIcons: UploadedImage[];
   selectedSliceId: string | null;

@@ -13,9 +13,27 @@ export interface WedgeGeometry {
   innerRadius: number;
   outerRadius: number;
   centroid: Point;
+  iconInnerPoint: Point;
+  iconOuterPoint: Point;
   path: string;
   clipPath: string;
   safeBounds: { x: number; y: number; width: number; height: number };
+}
+
+export type IconPlacement = 'inner' | 'outer';
+
+export function getIconPosition(
+  wedge: WedgeGeometry,
+  placement: IconPlacement,
+  offset: number
+): Point {
+  const t = placement === 'inner'
+    ? 0.12 + offset * 0.13
+    : 0.62 + offset * 0.33;
+  return {
+    x: wedge.iconInnerPoint.x + t * (wedge.iconOuterPoint.x - wedge.iconInnerPoint.x),
+    y: wedge.iconInnerPoint.y + t * (wedge.iconOuterPoint.y - wedge.iconInnerPoint.y),
+  };
 }
 
 export interface CanvasGeometry {
@@ -66,6 +84,28 @@ export function buildWedgePath(
   ].join(' ');
 }
 
+interface IconRing {
+  inflate: number;
+  innerR: number;
+  outerRX: number;
+  outerRY: number;
+}
+
+function computeIconRing(
+  innerRadius: number,
+  outerRadiusX: number,
+  outerRadiusY: number,
+  width: number,
+  sliceMargin: number,
+  iconSize: number
+): IconRing {
+  const inflate = Math.max(1, sliceMargin + iconSize / 2);
+  const innerR = innerRadius + inflate;
+  const outerRX = Math.max(innerR, width / 2 - inflate);
+  const outerRY = Math.max(innerR, outerRX * (outerRadiusY / outerRadiusX));
+  return { inflate, innerR, outerRX, outerRY };
+}
+
 export function computeCanvasGeometry(
   canvas: CanvasConfig,
   slices: Slice[],
@@ -78,22 +118,14 @@ export function computeCanvasGeometry(
   const centerX = width / 2;
   const centerY = height / 2;
 
-  const innerRadius = Math.min(width, height) * 0.18;
+  const innerRadius = Math.min(width, height) * (canvas.innerRadiusRatio ?? 0.18);
 
-  let outerRadiusX: number;
-  let outerRadiusY: number;
+  const baseRadiusX = (width / 2) * segmentExtension;
+  const baseRadiusY = (height / 2) * segmentExtension;
+  const squareRadius = Math.min(baseRadiusX, baseRadiusY);
 
-  if (layout === 'square') {
-    const available = Math.min(width, height) / 2;
-    outerRadiusX = available * segmentExtension;
-    outerRadiusY = available * segmentExtension;
-  } else if (layout === 'landscape') {
-    outerRadiusY = height / 2 * segmentExtension;
-    outerRadiusX = width / 2 * segmentExtension;
-  } else {
-    outerRadiusX = width / 2 * segmentExtension;
-    outerRadiusY = height / 2 * segmentExtension;
-  }
+  const outerRadiusX = layout === 'square' ? squareRadius : baseRadiusX;
+  const outerRadiusY = layout === 'square' ? squareRadius : baseRadiusY;
 
   const R = Math.max(outerRadiusX, outerRadiusY);
   const scaleX = R === 0 ? 1 : outerRadiusX / R;
@@ -114,16 +146,24 @@ export function computeCanvasGeometry(
       outerRadiusX,
       outerRadiusY
     );
-    const sliceMargin = slice.iconMargin ?? typography?.iconMargin ?? 8;
-    const iconSize = typography?.iconSize ?? 48;
-    const inflate = Math.max(1, sliceMargin + iconSize / 2);
+
+    // Compute icon ring geometry once, reuse for clipPath and icon positioning
+    const ring = computeIconRing(
+      innerRadius,
+      outerRadiusX,
+      outerRadiusY,
+      width,
+      slice.iconMargin ?? typography?.iconMargin ?? 8,
+      typography?.iconSize ?? 48
+    );
+
     const clipPath = buildWedgePath(
       startAngle,
       endAngle,
       innerRadius,
       outerRadiusX,
       outerRadiusY,
-      inflate
+      ring.inflate
     );
 
     const midRadius = innerRadius + (R - innerRadius) * textPadding;
@@ -143,6 +183,9 @@ export function computeCanvasGeometry(
       height: safeHeight0 * scaleY,
     };
 
+    const iconInnerPoint = ringPoint(midAngle, ring.innerR, ring.innerR);
+    const iconOuterPoint = ringPoint(midAngle, ring.outerRX, ring.outerRY);
+
     return {
       id: slice.id,
       index,
@@ -151,6 +194,8 @@ export function computeCanvasGeometry(
       innerRadius,
       outerRadius: R,
       centroid,
+      iconInnerPoint,
+      iconOuterPoint,
       path,
       clipPath,
       safeBounds,
