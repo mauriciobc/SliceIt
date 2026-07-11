@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { WedgeGeometry, CanvasGeometry } from '@/lib/geometry';
+import { WedgeGeometry, CanvasGeometry, getIconPosition, IconPlacement } from '@/lib/geometry';
 import { fitText } from '@/lib/textFit';
 import { Slice, TypographyConfig } from '@/types/infographic';
 import { iconComponents } from '@/lib/icons';
@@ -66,7 +66,7 @@ export function SliceRenderer({
     [slice.label, wedge.safeBounds, typography.labelFont, showIcon]
   );
 
-  const effectiveIconPlacement = slice.iconVerticalPosition !== undefined
+  const effectiveIconPlacement: IconPlacement = slice.iconVerticalPosition !== undefined
     ? (slice.iconVerticalPosition < 0.5 ? 'inner' : 'outer')
     : (typography.iconPlacement ?? 'outer');
 
@@ -74,13 +74,7 @@ export function SliceRenderer({
   const labelY = metricY + wedge.safeBounds.height * typography.metricLabelGap;
 
   const offset = slice.iconVerticalPosition ?? typography.iconVerticalPosition ?? 0.5;
-  const t = effectiveIconPlacement === 'inner'
-    ? 0.12 + offset * 0.13
-    : 0.62 + offset * 0.33;
-  const iconPos = {
-    x: wedge.iconInnerPoint.x + t * (wedge.iconOuterPoint.x - wedge.iconInnerPoint.x),
-    y: wedge.iconInnerPoint.y + t * (wedge.iconOuterPoint.y - wedge.iconInnerPoint.y),
-  };
+  const iconPos = getIconPosition(wedge, effectiveIconPlacement, offset);
 
   const uploadedIcons = useProjectStore((state) => state.uploadedIcons);
   const uploadedIcon = slice.uploadedIconId

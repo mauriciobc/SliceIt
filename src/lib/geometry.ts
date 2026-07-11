@@ -20,6 +20,22 @@ export interface WedgeGeometry {
   safeBounds: { x: number; y: number; width: number; height: number };
 }
 
+export type IconPlacement = 'inner' | 'outer';
+
+export function getIconPosition(
+  wedge: WedgeGeometry,
+  placement: IconPlacement,
+  offset: number
+): Point {
+  const t = placement === 'inner'
+    ? 0.12 + offset * 0.13
+    : 0.62 + offset * 0.33;
+  return {
+    x: wedge.iconInnerPoint.x + t * (wedge.iconOuterPoint.x - wedge.iconInnerPoint.x),
+    y: wedge.iconInnerPoint.y + t * (wedge.iconOuterPoint.y - wedge.iconInnerPoint.y),
+  };
+}
+
 export interface CanvasGeometry {
   width: number;
   height: number;
