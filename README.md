@@ -85,6 +85,21 @@ metric,label,color
 }
 ```
 
+## Self-hosting with Portainer
+
+SliceIt is a static SPA (no backend) and ships with a multi-stage `Dockerfile` that
+builds with Node and serves the bundle via Caddy. Deploy it as a Portainer stack
+directly from this GitHub repository:
+
+1. In Portainer: **Stacks → Add stack → Build method: Repository**.
+2. Repository URL: `https://github.com/mauriciobc/SliceIt.git`, branch `main`.
+3. Portainer auto-detects `docker-compose.yml` and builds the image. Click **Deploy**.
+4. Access the app at `http://<your-server-ip>:3500` (host port `3500` → container `80`).
+
+To serve over HTTPS with a domain, change the site address in `Caddyfile` from
+`:80` to your domain (e.g. `sliceit.example.com`) and Caddy provisions TLS
+automatically.
+
 ## License
 
 MIT

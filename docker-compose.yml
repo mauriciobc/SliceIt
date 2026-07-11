@@ -1,0 +1,10 @@
+services:
+  sliceit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sliceit:latest
+    container_name: sliceit
+    restart: unless-stopped
+    ports:
+      - "3500:80"
