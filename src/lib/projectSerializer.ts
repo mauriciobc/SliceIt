@@ -2,6 +2,8 @@ import { ProjectState } from '@/types/infographic';
 import { z } from 'zod';
 import { createDefaultProject } from './sampleData';
 
+const defaults = createDefaultProject();
+
 const dimensionsSchema = z.object({
   width: z.number().positive(),
   height: z.number().positive(),
@@ -11,8 +13,8 @@ const canvasSchema = z.object({
   aspectRatio: z.enum(['1:1', '4:5', '16:9', '9:16', '4:3', 'Custom']),
   dimensions: dimensionsSchema,
   backgroundColor: z.string(),
-  segmentExtension: z.number().optional(),
-  textPadding: z.number().optional(),
+  segmentExtension: z.number().default(defaults.canvas.segmentExtension),
+  textPadding: z.number().default(defaults.canvas.textPadding),
   innerRadiusRatio: z.number().optional(),
   showDividers: z.boolean().optional(),
   dividerWidth: z.number().optional(),
@@ -54,9 +56,9 @@ const typographySchema = z.object({
   labelColor: z.string(),
   showIcons: z.boolean(),
   iconSize: z.number(),
-  metricLabelGap: z.number().optional(),
-  iconVerticalPosition: z.number().optional(),
-  iconMargin: z.number().optional(),
+  metricLabelGap: z.number().default(defaults.typography.metricLabelGap),
+  iconVerticalPosition: z.number().default(defaults.typography.iconVerticalPosition),
+  iconMargin: z.number().default(defaults.typography.iconMargin),
   iconPlacement: z.enum(['inner', 'outer']).optional(),
   rotateText: z.boolean().optional(),
   metricFontWeight: z.number().optional(),
@@ -77,31 +79,23 @@ const sliceSchema = z.object({
 const sliceStyleSchema = z.object({
   fillMode: z.enum(['solid', 'radial']),
   gradientIntensity: z.number(),
-}).optional();
+});
 
 const projectSchema = z.object({
   version: z.number(),
-  canvas: canvasSchema,
-  palette: paletteSchema,
-  center: centerSchema,
-  typography: typographySchema,
-  sliceStyle: sliceStyleSchema,
+  canvas: canvasSchema.default(defaults.canvas),
+  palette: paletteSchema.default(defaults.palette),
+  center: centerSchema.default(defaults.center),
+  typography: typographySchema.default(defaults.typography),
+  sliceStyle: sliceStyleSchema.default(defaults.sliceStyle),
   slices: z.array(sliceSchema),
-  uploadedIcons: z.array(uploadedImageSchema).optional(),
+  uploadedIcons: z.array(uploadedImageSchema).default(defaults.uploadedIcons),
 });
 
 export function validateProject(data: unknown): ProjectState {
   const parsed = projectSchema.parse(data);
-  const defaults = createDefaultProject();
   return {
-    ...defaults,
     ...parsed,
-    canvas: { ...defaults.canvas, ...parsed.canvas },
-    palette: { ...defaults.palette, ...parsed.palette },
-    center: { ...defaults.center, ...parsed.center },
-    typography: { ...defaults.typography, ...parsed.typography },
-    sliceStyle: parsed.sliceStyle ?? defaults.sliceStyle,
-    uploadedIcons: parsed.uploadedIcons ?? defaults.uploadedIcons,
     selectedSliceId: null,
   };
 }
