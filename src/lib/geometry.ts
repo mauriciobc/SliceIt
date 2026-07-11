@@ -108,9 +108,15 @@ export function computeCanvasGeometry(
       outerRadiusX,
       outerRadiusY
     );
+
+    // Compute icon ring geometry once, reuse for clipPath and icon positioning
     const sliceMargin = slice.iconMargin ?? typography?.iconMargin ?? 8;
     const iconSize = typography?.iconSize ?? 48;
     const inflate = Math.max(1, sliceMargin + iconSize / 2);
+    const innerR = innerRadius + inflate;
+    const outerRX = Math.max(innerR, width / 2 - inflate);
+    const outerRY = Math.max(innerR, outerRX * (outerRadiusY / outerRadiusX));
+
     const clipPath = buildWedgePath(
       startAngle,
       endAngle,
@@ -137,9 +143,6 @@ export function computeCanvasGeometry(
       height: safeHeight0 * scaleY,
     };
 
-    const innerR = innerRadius + inflate;
-    const outerRX = Math.max(innerR, width / 2 - inflate);
-    const outerRY = Math.max(innerR, outerRX * (outerRadiusY / outerRadiusX));
     const iconInnerPoint = ringPoint(midAngle, innerR, innerR);
     const iconOuterPoint = ringPoint(midAngle, outerRX, outerRY);
 
