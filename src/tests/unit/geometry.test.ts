@@ -83,4 +83,23 @@ describe('geometry', () => {
     const narrow = computeCanvasGeometry(createCanvas(1080, 1080), createSlices(12));
     expect(narrow.wedges[0].safeBounds.width).toBeLessThan(wide.wedges[0].safeBounds.width);
   });
+
+  it('maps landscape radii to scaled half-dimensions (X from width, Y from height)', () => {
+    const geometry = computeCanvasGeometry(createCanvas(1920, 1080), createSlices(8));
+    expect(geometry.outerRadiusX).toBeCloseTo((1920 / 2) * 1.3, 5);
+    expect(geometry.outerRadiusY).toBeCloseTo((1080 / 2) * 1.3, 5);
+  });
+
+  it('maps portrait radii to scaled half-dimensions (X from width, Y from height)', () => {
+    const geometry = computeCanvasGeometry(createCanvas(1080, 1920), createSlices(8));
+    expect(geometry.outerRadiusX).toBeCloseTo((1080 / 2) * 1.3, 5);
+    expect(geometry.outerRadiusY).toBeCloseTo((1920 / 2) * 1.3, 5);
+  });
+
+  it('clamps square radii to the smaller scaled half-dimension', () => {
+    const geometry = computeCanvasGeometry(createCanvas(1080, 1080), createSlices(8));
+    const expected = (1080 / 2) * 1.3;
+    expect(geometry.outerRadiusX).toBeCloseTo(expected, 5);
+    expect(geometry.outerRadiusY).toBeCloseTo(expected, 5);
+  });
 });
