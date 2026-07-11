@@ -102,4 +102,25 @@ describe('geometry', () => {
     expect(geometry.outerRadiusX).toBeCloseTo(expected, 5);
     expect(geometry.outerRadiusY).toBeCloseTo(expected, 5);
   });
+
+  it('applies inflate to the wedge clipPath but not the base path', () => {
+    const geometry = computeCanvasGeometry(createCanvas(1080, 1080), createSlices(8));
+    for (const wedge of geometry.wedges) {
+      expect(wedge.clipPath).not.toBe(wedge.path);
+    }
+  });
+
+  it('derives icon ring radii from inner radius + inflate', () => {
+    const geometry = computeCanvasGeometry(createCanvas(1080, 1080), createSlices(8));
+    const innerRadius = Math.min(1080, 1080) * 0.18;
+    const inflate = Math.max(1, 8 + 48 / 2);
+    const innerR = innerRadius + inflate;
+    const outerRX = Math.max(innerR, 1080 / 2 - inflate);
+    for (const wedge of geometry.wedges) {
+      const dIn = Math.hypot(wedge.iconInnerPoint.x, wedge.iconInnerPoint.y);
+      const dOut = Math.hypot(wedge.iconOuterPoint.x, wedge.iconOuterPoint.y);
+      expect(dIn).toBeCloseTo(innerR, 1);
+      expect(dOut).toBeCloseTo(outerRX, 1);
+    }
+  });
 });
