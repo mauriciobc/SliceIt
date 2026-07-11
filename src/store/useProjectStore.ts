@@ -12,6 +12,7 @@ import {
   ProjectState,
   RECOMMENDED_MAX_SLICES,
   Slice,
+  SliceStyleConfig,
   TypographyConfig,
   updateDimensionsForAspectRatio,
   UploadedImage,
@@ -63,6 +64,7 @@ interface ProjectActions {
   setPalette(palette: Partial<PaletteConfig>): void;
   setCenter(center: Partial<CenterConfig>): void;
   setTypography(typography: Partial<TypographyConfig>): void;
+  setSliceStyle(style: Partial<SliceStyleConfig>): void;
   addSlice(): void;
   removeSlice(id: string): void;
   updateSlice(id: string, slice: Partial<Slice>): void;
@@ -78,16 +80,19 @@ interface ProjectActions {
   resetIconSettings(): void;
 }
 
-export const useProjectStore = create<AppState & ProjectActions>((set) => ({
-  ...defaultProject,
-  warnings: [],
-  errors: [],
+export const useProjectStore = create<AppState & ProjectActions>((set) => {
+  const createPartialSetter = <T extends object>(field: keyof AppState) =>
+    (partial: Partial<T>) =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        Object.assign(draft[field] as T, partial);
+      }));
 
-  setCanvas: (canvas) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      Object.assign(draft.canvas, canvas);
-    })),
+  return {
+    ...defaultProject,
+    warnings: [],
+    errors: [],
 
+    setCanvas: createPartialSetter<CanvasConfig>('canvas'),
   setAspectRatio: (aspectRatio) =>
     set((state) => produce(state, (draft: Draft<AppState>) => {
       draft.canvas.aspectRatio = aspectRatio;
@@ -103,20 +108,10 @@ export const useProjectStore = create<AppState & ProjectActions>((set) => ({
       draft.canvas.aspectRatio = 'Custom';
     })),
 
-  setPalette: (palette) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      Object.assign(draft.palette, palette);
-    })),
-
-  setCenter: (center) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      Object.assign(draft.center, center);
-    })),
-
-  setTypography: (typography) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      Object.assign(draft.typography, typography);
-    })),
+  setPalette: createPartialSetter<PaletteConfig>('palette'),
+  setCenter: createPartialSetter<CenterConfig>('center'),
+  setTypography: createPartialSetter<TypographyConfig>('typography'),
+  setSliceStyle: createPartialSetter<SliceStyleConfig>('sliceStyle'),
 
   addSlice: () =>
     set((state) => produce(state, (draft: Draft<AppState>) => {
@@ -190,6 +185,7 @@ export const useProjectStore = create<AppState & ProjectActions>((set) => ({
       draft.palette = project.palette;
       draft.center = project.center;
       draft.typography = project.typography;
+      draft.sliceStyle = project.sliceStyle;
       draft.slices = project.slices;
       draft.uploadedIcons = project.uploadedIcons ?? [];
       draft.selectedSliceId = null;
@@ -204,6 +200,7 @@ export const useProjectStore = create<AppState & ProjectActions>((set) => ({
         draft.palette = fresh.palette;
         draft.center = fresh.center;
         draft.typography = fresh.typography;
+        draft.sliceStyle = fresh.sliceStyle;
         draft.slices = fresh.slices;
         draft.uploadedIcons = fresh.uploadedIcons;
         draft.selectedSliceId = null;
@@ -222,4 +219,5 @@ export const useProjectStore = create<AppState & ProjectActions>((set) => ({
         }
       })
     ),
-}));
+  }
+})
