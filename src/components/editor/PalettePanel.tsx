@@ -9,8 +9,46 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { PaletteMode, SliceStyleMode } from '@/types/infographic';
+import { PaletteConfig, PaletteMode, SliceStyleMode } from '@/types/infographic';
 import { useI18n } from '@/i18n';
+
+function ColorInputPair({
+  id,
+  label,
+  value,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const { t } = useI18n();
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{t(label)}</Label>
+      <div className="flex items-center gap-2">
+        <Input
+          id={id}
+          type="color"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-9 w-14 px-1 py-1"
+        />
+        <Input type="text" value={value} onChange={(e) => onChange(e.target.value)} />
+      </div>
+    </div>
+  );
+}
+
+const PALETTE_CONTROLS: Record<PaletteMode, Array<{ key: keyof import('@/types/infographic').PaletteConfig; label: string }>> = {
+  single: [{ key: 'singleColor', label: 'palette.baseColor' }],
+  gradient: [
+    { key: 'gradientStart', label: 'palette.startColor' },
+    { key: 'gradientEnd', label: 'palette.endColor' },
+  ],
+  manual: [],
+};
 
 export function PalettePanel() {
   const { t } = useI18n();
@@ -38,69 +76,18 @@ export function PalettePanel() {
         </Select>
       </div>
 
-      {palette.mode === 'single' && (
-        <div className="space-y-2">
-          <Label htmlFor="single-color">{t('palette.baseColor')}</Label>
-          <div className="flex items-center gap-2">
-            <Input
-              id="single-color"
-              type="color"
-              value={palette.singleColor}
-              onChange={(e) => setPalette({ singleColor: e.target.value })}
-              className="h-9 w-14 px-1 py-1"
-            />
-            <Input
-              type="text"
-              value={palette.singleColor}
-              onChange={(e) => setPalette({ singleColor: e.target.value })}
-            />
-          </div>
-        </div>
-      )}
-
-      {palette.mode === 'gradient' && (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="gradient-start">{t('palette.startColor')}</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="gradient-start"
-                type="color"
-                value={palette.gradientStart}
-                onChange={(e) => setPalette({ gradientStart: e.target.value })}
-                className="h-9 w-14 px-1 py-1"
-              />
-              <Input
-                type="text"
-                value={palette.gradientStart}
-                onChange={(e) => setPalette({ gradientStart: e.target.value })}
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="gradient-end">{t('palette.endColor')}</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="gradient-end"
-                type="color"
-                value={palette.gradientEnd}
-                onChange={(e) => setPalette({ gradientEnd: e.target.value })}
-                className="h-9 w-14 px-1 py-1"
-              />
-              <Input
-                type="text"
-                value={palette.gradientEnd}
-                onChange={(e) => setPalette({ gradientEnd: e.target.value })}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      {PALETTE_CONTROLS[palette.mode].map(({ key, label }) => (
+        <ColorInputPair
+          key={key as string}
+          id={key as string}
+          label={label}
+          value={palette[key]}
+          onChange={(value) => setPalette({ [key]: value } as Partial<PaletteConfig>)}
+        />
+      ))}
 
       {palette.mode === 'manual' && (
-        <p className="text-sm text-muted-foreground">
-          {t('palette.manualHint')}
-        </p>
+        <p className="text-sm text-muted-foreground">{t('palette.manualHint')}</p>
       )}
 
       <div className="border-t pt-4 mt-4">
