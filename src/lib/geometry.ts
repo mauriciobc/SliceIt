@@ -98,12 +98,12 @@ export function computeCanvasGeometry(
 
   const innerRadius = Math.min(width, height) * (canvas.innerRadiusRatio ?? 0.18);
 
-  const isSquare = layout === 'square';
-  const constrained = isSquare ? Math.min(width, height) : layout === 'landscape' ? height : width;
-  const unconstrained = isSquare ? Math.min(width, height) : layout === 'landscape' ? width : height;
+  const baseRadiusX = (width / 2) * segmentExtension;
+  const baseRadiusY = (height / 2) * segmentExtension;
+  const squareRadius = Math.min(baseRadiusX, baseRadiusY);
 
-  const outerRadiusX = (layout === 'portrait' ? constrained : unconstrained) / 2 * segmentExtension;
-  const outerRadiusY = (layout === 'landscape' ? constrained : unconstrained) / 2 * segmentExtension;
+  const outerRadiusX = layout === 'square' ? squareRadius : baseRadiusX;
+  const outerRadiusY = layout === 'square' ? squareRadius : baseRadiusY;
 
   const R = Math.max(outerRadiusX, outerRadiusY);
   const scaleX = R === 0 ? 1 : outerRadiusX / R;
