@@ -84,6 +84,28 @@ export function buildWedgePath(
   ].join(' ');
 }
 
+interface IconRing {
+  inflate: number;
+  innerR: number;
+  outerRX: number;
+  outerRY: number;
+}
+
+function computeIconRing(
+  innerRadius: number,
+  outerRadiusX: number,
+  outerRadiusY: number,
+  width: number,
+  sliceMargin: number,
+  iconSize: number
+): IconRing {
+  const inflate = Math.max(1, sliceMargin + iconSize / 2);
+  const innerR = innerRadius + inflate;
+  const outerRX = Math.max(innerR, width / 2 - inflate);
+  const outerRY = Math.max(innerR, outerRX * (outerRadiusY / outerRadiusX));
+  return { inflate, innerR, outerRX, outerRY };
+}
+
 export function computeCanvasGeometry(
   canvas: CanvasConfig,
   slices: Slice[],
@@ -126,12 +148,14 @@ export function computeCanvasGeometry(
     );
 
     // Compute icon ring geometry once, reuse for clipPath and icon positioning
-    const sliceMargin = slice.iconMargin ?? typography?.iconMargin ?? 8;
-    const iconSize = typography?.iconSize ?? 48;
-    const inflate = Math.max(1, sliceMargin + iconSize / 2);
-    const innerR = innerRadius + inflate;
-    const outerRX = Math.max(innerR, width / 2 - inflate);
-    const outerRY = Math.max(innerR, outerRX * (outerRadiusY / outerRadiusX));
+    const ring = computeIconRing(
+      innerRadius,
+      outerRadiusX,
+      outerRadiusY,
+      width,
+      slice.iconMargin ?? typography?.iconMargin ?? 8,
+      typography?.iconSize ?? 48
+    );
 
     const clipPath = buildWedgePath(
       startAngle,
@@ -139,7 +163,7 @@ export function computeCanvasGeometry(
       innerRadius,
       outerRadiusX,
       outerRadiusY,
-      inflate
+      ring.inflate
     );
 
     const midRadius = innerRadius + (R - innerRadius) * textPadding;
@@ -159,8 +183,8 @@ export function computeCanvasGeometry(
       height: safeHeight0 * scaleY,
     };
 
-    const iconInnerPoint = ringPoint(midAngle, innerR, innerR);
-    const iconOuterPoint = ringPoint(midAngle, outerRX, outerRY);
+    const iconInnerPoint = ringPoint(midAngle, ring.innerR, ring.innerR);
+    const iconOuterPoint = ringPoint(midAngle, ring.outerRX, ring.outerRY);
 
     return {
       id: slice.id,
