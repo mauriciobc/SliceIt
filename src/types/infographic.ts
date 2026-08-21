@@ -16,6 +16,9 @@ export interface CanvasConfig {
   innerRadiusRatio?: number;
   showDividers?: boolean;
   dividerWidth?: number;
+  sourceNote?: string;
+  brandName?: string;
+  showBrandAttribution?: boolean;
 }
 
 export type SliceStyleMode = 'solid' | 'radial';
@@ -56,6 +59,8 @@ export interface CenterConfig {
   centerColorOverride?: string;
   logos: UploadedImage[];
   logoPlacement: LogoPlacement;
+  emblemIcon?: string;
+  deriveTextColors?: boolean;
 }
 
 export interface Slice {
@@ -83,6 +88,7 @@ export interface TypographyConfig {
   rotateText?: boolean;
   metricFontWeight?: number;
   textAlign?: 'start' | 'middle' | 'end';
+  autoTextContrast?: boolean;
 }
 
 export interface ProjectState {

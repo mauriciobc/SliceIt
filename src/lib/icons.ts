@@ -4,6 +4,7 @@ const aliases: Record<string, string> = {
   Storage: 'HardDrive',
   Security: 'Shield',
   Identity: 'Fingerprint',
+  Fingerprint: 'FingerprintPattern',
   DevOps: 'GitBranch',
   AI: 'BrainCircuit',
   API: 'Globe',

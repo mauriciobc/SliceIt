@@ -5,6 +5,13 @@ export interface Point {
   y: number;
 }
 
+export interface WedgeContentSlots {
+  icon: Point;
+  metric: Point;
+  label: Point;
+  anchor: Point;
+}
+
 export interface WedgeGeometry {
   id: string;
   index: number;
@@ -18,6 +25,7 @@ export interface WedgeGeometry {
   path: string;
   clipPath: string;
   safeBounds: { x: number; y: number; width: number; height: number };
+  content: WedgeContentSlots;
 }
 
 export type IconPlacement = 'inner' | 'outer';
@@ -33,6 +41,37 @@ export function getIconPosition(
   return {
     x: wedge.iconInnerPoint.x + t * (wedge.iconOuterPoint.x - wedge.iconInnerPoint.x),
     y: wedge.iconInnerPoint.y + t * (wedge.iconOuterPoint.y - wedge.iconInnerPoint.y),
+  };
+}
+
+export function getContentSlots(
+  midAngle: number,
+  innerRadius: number,
+  outerRadius: number,
+  scaleX: number,
+  scaleY: number,
+  halfWidth: number,
+  halfHeight: number,
+  edgePadding: number
+): WedgeContentSlots {
+  const s = Math.abs(Math.sin(midAngle));
+  const c = Math.abs(Math.cos(midAngle));
+  const tx = s > 1e-6 ? halfWidth / (outerRadius * scaleX * s) : Infinity;
+  const ty = c > 1e-6 ? halfHeight / (outerRadius * scaleY * c) : Infinity;
+  const visibleFactor = Math.min(1, tx, ty);
+  const visibleRadius = Math.max(innerRadius + 1, outerRadius * visibleFactor - edgePadding);
+  const span = Math.max(1, visibleRadius - innerRadius);
+
+  const slotAt = (fraction: number): Point => {
+    const canonical = ringPoint(midAngle, innerRadius + span * fraction, innerRadius + span * fraction);
+    return { x: canonical.x * scaleX, y: canonical.y * scaleY };
+  };
+
+  return {
+    icon: slotAt(0.3),
+    metric: slotAt(0.56),
+    label: slotAt(0.74),
+    anchor: slotAt(0.62),
   };
 }
 
@@ -186,6 +225,17 @@ export function computeCanvasGeometry(
     const iconInnerPoint = ringPoint(midAngle, ring.innerR, ring.innerR);
     const iconOuterPoint = ringPoint(midAngle, ring.outerRX, ring.outerRY);
 
+    const content = getContentSlots(
+      midAngle,
+      innerRadius,
+      R,
+      scaleX,
+      scaleY,
+      width / 2,
+      height / 2,
+      24
+    );
+
     return {
       id: slice.id,
       index,
@@ -199,6 +249,7 @@ export function computeCanvasGeometry(
       path,
       clipPath,
       safeBounds,
+      content,
     };
   });
 

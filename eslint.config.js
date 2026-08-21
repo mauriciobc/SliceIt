@@ -17,9 +17,6 @@ export default defineConfig([
       reactRefresh.configs.vite,
       eslintConfigPrettier,
     ],
-    rules: {
-      'react-hooks/static-components': 'off',
-    },
     languageOptions: {
       globals: globals.browser,
       parserOptions: {
@@ -27,6 +24,7 @@ export default defineConfig([
       },
     },
     rules: {
+      'react-hooks/static-components': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },

@@ -3,6 +3,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
+import { Separator } from '@/components/ui/separator';
 import {
   Select,
   SelectContent,
@@ -158,6 +159,38 @@ export function CanvasPanel() {
           onChange={(e) => setCanvas({ textPadding: parseFloat(e.target.value) })}
         />
         <p className="text-xs text-muted-foreground">Text position within segments (0.0 = inner, 1.0 = outer)</p>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-2">
+        <Label htmlFor="brand-name">Brand Name</Label>
+        <Input
+          id="brand-name"
+          value={canvas.brandName ?? ''}
+          onChange={(e) => setCanvas({ brandName: e.target.value || undefined })}
+          placeholder="e.g. SliceIt"
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <Label htmlFor="show-brand-attribution">Show &ldquo;Presented by&rdquo; label</Label>
+        <Switch
+          id="show-brand-attribution"
+          checked={canvas.showBrandAttribution ?? true}
+          onCheckedChange={(checked) => setCanvas({ showBrandAttribution: checked })}
+        />
+      </div>
+      <p className="text-xs text-muted-foreground">Hides the center attribution when your logo already contains the brand.</p>
+
+      <div className="space-y-2">
+        <Label htmlFor="source-note">Source Note</Label>
+        <Input
+          id="source-note"
+          value={canvas.sourceNote ?? ''}
+          onChange={(e) => setCanvas({ sourceNote: e.target.value || undefined })}
+          placeholder="Source: ..."
+        />
       </div>
     </div>
   );

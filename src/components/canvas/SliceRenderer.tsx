@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
-import { WedgeGeometry, CanvasGeometry, getIconPosition, IconPlacement } from '@/lib/geometry';
+import { useMemo, type ReactElement } from 'react';
+import { WedgeGeometry, CanvasGeometry } from '@/lib/geometry';
 import { fitText } from '@/lib/textFit';
 import { Slice, TypographyConfig } from '@/types/infographic';
-import { iconComponents } from '@/lib/icons';
+import { getIconComponent } from '@/lib/icons';
+import { getContrastColor } from '@/lib/palette';
 import { useProjectStore } from '@/store/useProjectStore';
 
 interface SliceRendererProps {
@@ -23,13 +24,19 @@ interface SliceIconProps {
   color: string;
 }
 
+interface StackItem {
+  key: string;
+  height: number;
+  render: (y: number) => ReactElement;
+}
+
 function SliceIcon({ name, x, y, size, color }: SliceIconProps) {
-  const Icon = iconComponents[name];
+  const Icon = getIconComponent(name);
   if (!Icon) return null;
 
   return (
     <g transform={`translate(${x - size / 2}, ${y - size / 2})`}>
-      <Icon size={size} color={color} strokeWidth={2} />
+      <Icon size={size} color={color} strokeWidth={Math.max(1.6, size * 0.05)} />
     </g>
   );
 }
@@ -46,7 +53,7 @@ export function SliceRenderer({
     () =>
       fitText(slice.metric, {
         maxWidth: wedge.safeBounds.width * 0.9,
-        maxHeight: wedge.safeBounds.height * 0.4,
+        maxHeight: wedge.safeBounds.height * 0.32,
         fontFamily: typography.metricFont,
         minFontSize: 16,
         maxFontSize: 64,
@@ -58,23 +65,13 @@ export function SliceRenderer({
     () =>
       fitText(slice.label, {
         maxWidth: wedge.safeBounds.width * 0.9,
-        maxHeight: wedge.safeBounds.height * (showIcon ? 0.35 : 0.45),
+        maxHeight: wedge.safeBounds.height * (showIcon ? 0.3 : 0.4),
         fontFamily: typography.labelFont,
-        minFontSize: 12,
+        minFontSize: 11,
         maxFontSize: 28,
       }),
     [slice.label, wedge.safeBounds, typography.labelFont, showIcon]
   );
-
-  const effectiveIconPlacement: IconPlacement = slice.iconVerticalPosition !== undefined
-    ? (slice.iconVerticalPosition < 0.5 ? 'inner' : 'outer')
-    : (typography.iconPlacement ?? 'outer');
-
-  const metricY = wedge.safeBounds.y + wedge.safeBounds.height * (0.5 - typography.metricLabelGap / 2);
-  const labelY = metricY + wedge.safeBounds.height * typography.metricLabelGap;
-
-  const offset = slice.iconVerticalPosition ?? typography.iconVerticalPosition ?? 0.5;
-  const iconPos = getIconPosition(wedge, effectiveIconPlacement, offset);
 
   const uploadedIcons = useProjectStore((state) => state.uploadedIcons);
   const uploadedIcon = slice.uploadedIconId
@@ -83,13 +80,19 @@ export function SliceRenderer({
 
   const iconName = slice.icon;
 
+  const autoContrast = typography.autoTextContrast ?? false;
+  const metricFill = autoContrast ? getContrastColor(color) : typography.metricColor;
+  const labelFill = autoContrast ? getContrastColor(color) : typography.labelColor;
+
   const textAlign = typography.textAlign ?? 'middle';
   const textAnchor = textAlign === 'start' ? 'start' : textAlign === 'end' ? 'end' : 'middle';
+  const anchorX = wedge.content.anchor.x;
+  const halfChord = wedge.safeBounds.width / 2;
   const textX = textAlign === 'start'
-    ? wedge.safeBounds.x
+    ? anchorX - halfChord
     : textAlign === 'end'
-      ? wedge.safeBounds.x + wedge.safeBounds.width
-      : wedge.centroid.x;
+      ? anchorX + halfChord
+      : anchorX;
 
   const midAngle = (wedge.startAngle + wedge.endAngle) / 2;
   const midAngleDeg = (midAngle * 180) / Math.PI;
@@ -98,6 +101,115 @@ export function SliceRenderer({
   const rotateTransform = typography.rotateText
     ? `rotate(${isFlipped ? midAngleDeg + 180 : midAngleDeg})`
     : '';
+
+  const items: StackItem[] = [];
+
+  if (showIcon && (uploadedIcon || iconName)) {
+    const size = typography.iconSize;
+    const chipRadius = size * 0.62;
+    const chipDiameter = chipRadius * 2;
+    items.push({
+      key: 'icon',
+      height: chipDiameter,
+      render: (y) => (
+        <g key="icon">
+          <circle
+            cx={textX}
+            cy={y + chipRadius}
+            r={chipRadius}
+            fill="#ffffff"
+            stroke="rgba(15,23,42,0.06)"
+            strokeWidth={1}
+          />
+          {uploadedIcon ? (
+            <image
+              href={uploadedIcon.dataUrl}
+              x={textX - size / 2}
+              y={y + chipRadius - size / 2}
+              width={size}
+              height={size}
+              preserveAspectRatio="xMidYMid meet"
+            />
+          ) : (
+            <SliceIcon
+              name={iconName as string}
+              x={textX}
+              y={y + chipRadius}
+              size={size * 0.72}
+              color="#0f172a"
+            />
+          )}
+        </g>
+      ),
+    });
+  }
+
+  const metricLineHeight = metricResult.fontSize * 1.1;
+  items.push({
+    key: 'metric',
+    height: metricLineHeight * metricResult.lines.length,
+    render: (blockTop) => (
+      <text
+        key="metric"
+        x={textX}
+        y={blockTop + metricLineHeight / 2}
+        textAnchor={textAnchor}
+        dominantBaseline="middle"
+        fill={metricFill}
+        style={{
+          fontFamily: typography.metricFont,
+          fontSize: metricResult.fontSize,
+          fontWeight: typography.metricFontWeight ?? 700,
+          textTransform: 'uppercase',
+        }}
+      >
+        {metricResult.lines.map((line, i) => (
+          <tspan key={i} x={textX} dy={i === 0 ? 0 : `${metricLineHeight}px`}>
+            {line}
+          </tspan>
+        ))}
+      </text>
+    ),
+  });
+
+  const labelLineHeight = labelResult.fontSize * 1.25;
+  items.push({
+    key: 'label',
+    height: labelLineHeight * labelResult.lines.length,
+    render: (blockTop) => (
+      <text
+        key="label"
+        x={textX}
+        y={blockTop + labelLineHeight / 2}
+        textAnchor={textAnchor}
+        dominantBaseline="middle"
+        fill={labelFill}
+        style={{
+          fontFamily: typography.labelFont,
+          fontSize: labelResult.fontSize,
+          fontWeight: 500,
+          textTransform: 'uppercase',
+          letterSpacing: '0.02em',
+        }}
+      >
+        {labelResult.lines.map((line, i) => (
+          <tspan key={i} x={textX} dy={i === 0 ? 0 : `${labelLineHeight}px`}>
+            {line}
+          </tspan>
+        ))}
+      </text>
+    ),
+  });
+
+  const gap = wedge.safeBounds.height * 0.04;
+  const totalHeight =
+    items.reduce((sum, item) => sum + item.height, 0) + gap * (items.length - 1);
+  let cursorY = wedge.content.anchor.y - totalHeight / 2;
+  const renderedItems: ReactElement[] = [];
+  for (const item of items) {
+    renderedItems.push(item.render(cursorY));
+    cursorY += item.height + gap;
+  }
 
   return (
     <g>
@@ -108,61 +220,9 @@ export function SliceRenderer({
       </clipPath>
 
       <g clipPath={`url(#wedge-clip-${wedge.id})`}>
-        <g transform={rotateTransform} style={{ transformOrigin: `${wedge.centroid.x}px ${wedge.centroid.y}px` }}>
-          <text
-            x={textX}
-            y={metricY}
-            textAnchor={textAnchor}
-            dominantBaseline="middle"
-            fill={typography.metricColor}
-            style={{
-              fontFamily: typography.metricFont,
-              fontSize: metricResult.fontSize,
-              fontWeight: typography.metricFontWeight ?? 700,
-              textTransform: 'uppercase',
-            }}
-          >
-            {metricResult.lines.map((line, i) => (
-              <tspan key={i} x={textX} dy={i === 0 ? 0 : '1.1em'}>
-                {line}
-              </tspan>
-            ))}
-          </text>
-
-          <text
-            x={textX}
-            y={labelY}
-            textAnchor={textAnchor}
-            dominantBaseline="middle"
-            fill={typography.labelColor}
-            style={{
-              fontFamily: typography.labelFont,
-              fontSize: labelResult.fontSize,
-              fontWeight: 500,
-              textTransform: 'uppercase',
-            }}
-          >
-            {labelResult.lines.map((line, i) => (
-              <tspan key={i} x={textX} dy={i === 0 ? 0 : '1.1em'}>
-                {line}
-              </tspan>
-            ))}
-          </text>
+        <g transform={rotateTransform} style={{ transformOrigin: '0px 0px' }}>
+          {renderedItems}
         </g>
-
-        {showIcon && uploadedIcon && (
-          <image
-            href={uploadedIcon.dataUrl}
-            x={iconPos.x - typography.iconSize / 2}
-            y={iconPos.y - typography.iconSize / 2}
-            width={typography.iconSize}
-            height={typography.iconSize}
-            preserveAspectRatio="xMidYMid meet"
-          />
-        )}
-        {showIcon && !uploadedIcon && iconName && (
-          <SliceIcon name={iconName} x={iconPos.x} y={iconPos.y} size={typography.iconSize} color={typography.labelColor} />
-        )}
       </g>
     </g>
   );

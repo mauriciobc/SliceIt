@@ -2,7 +2,7 @@ import { useMemo, useRef } from 'react';
 import { hsl } from 'd3-color';
 import { useProjectStore } from '@/store/useProjectStore';
 import { computeCanvasGeometry } from '@/lib/geometry';
-import { getAllSliceColors, deriveCenterColor } from '@/lib/palette';
+import { getAllSliceColors, deriveCenterColor, getContrastColor } from '@/lib/palette';
 import { useResizeObserver } from '@/hooks/useResizeObserver';
 import { useGoogleFont } from '@/hooks/useGoogleFont';
 import { CenterWheel } from './CenterWheel';
@@ -24,8 +24,8 @@ export function RadialCanvas() {
     [centerConfig.centerColorOverride, sliceColors]
   );
 
-  const showDividers = canvas.showDividers ?? false;
-  const dividerWidth = canvas.dividerWidth ?? 2;
+  const showDividers = canvas.showDividers ?? true;
+  const dividerWidth = canvas.dividerWidth ?? 5;
   const sliceStyle = useProjectStore((state) => state.sliceStyle);
 
   useGoogleFont([
@@ -150,8 +150,38 @@ export function RadialCanvas() {
             geometry={geometry}
             centerConfig={centerConfig}
             centerColor={centerColor}
+            brandName={canvas.brandName}
+            showBrandAttribution={canvas.showBrandAttribution}
           />
         </g>
+
+        {canvas.sourceNote ? (
+          <g>
+            <rect
+              x={14}
+              y={geometry.height - 28}
+              width={Math.max(120, canvas.sourceNote.length * 6.2 + 16)}
+              height={18}
+              rx={9}
+              fill={canvas.backgroundColor}
+              opacity={0.88}
+            />
+            <text
+              x={22}
+              y={geometry.height - 16}
+              fill={getContrastColor(canvas.backgroundColor)}
+              opacity={0.72}
+              style={{
+                fontFamily: 'Inter, system-ui, sans-serif',
+                fontSize: Math.max(10, geometry.height * 0.011),
+                fontWeight: 500,
+                letterSpacing: '0.01em',
+              }}
+            >
+              {canvas.sourceNote}
+            </text>
+          </g>
+        ) : null}
       </svg>
     </div>
   );

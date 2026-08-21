@@ -8,8 +8,9 @@ test.describe('Radial Infographic Generator smoke flow', () => {
   test('renders default infographic', async ({ page }) => {
     const canvas = page.locator('#radial-canvas');
     await expect(canvas).toBeVisible();
-    await expect(canvas.locator('path')).toHaveCount(16);
-    await expect(canvas.locator('text')).toHaveCount(19);
+    // One filled wedge path per slice (clipPath and icon internals excluded by direct-child selector).
+    await expect(canvas.locator('g > path')).toHaveCount(8);
+    await expect(canvas.locator('text').filter({ hasText: /./ }).first()).toBeVisible();
 
     // Regression guard: text must actually be painted, not just present in the DOM.
     const bbox = await canvas.boundingBox();

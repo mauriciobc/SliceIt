@@ -18,6 +18,9 @@ const canvasSchema = z.object({
   innerRadiusRatio: z.number().optional(),
   showDividers: z.boolean().optional(),
   dividerWidth: z.number().optional(),
+  sourceNote: z.string().optional(),
+  brandName: z.string().optional(),
+  showBrandAttribution: z.boolean().optional(),
 });
 
 const paletteSchema = z.object({
@@ -47,6 +50,8 @@ const centerSchema = z.object({
   centerColorOverride: z.string().optional(),
   logos: z.array(uploadedImageSchema),
   logoPlacement: z.enum(['top', 'center', 'bottom', 'auto']),
+  emblemIcon: z.string().optional(),
+  deriveTextColors: z.boolean().optional(),
 });
 
 const typographySchema = z.object({
@@ -63,6 +68,7 @@ const typographySchema = z.object({
   rotateText: z.boolean().optional(),
   metricFontWeight: z.number().optional(),
   textAlign: z.enum(['start', 'middle', 'end']).optional(),
+  autoTextContrast: z.boolean().optional(),
 });
 
 const sliceSchema = z.object({
