@@ -46,31 +46,82 @@ export function SliceRenderer({
   slice,
   color,
   gradientId,
+  geometry,
   typography,
   showIcon,
 }: SliceRendererProps) {
+  const midAngle = (wedge.startAngle + wedge.endAngle) / 2;
+  const midAngleDeg = (midAngle * 180) / Math.PI;
+  const isFlipped = midAngleDeg > 90 || midAngleDeg < -90;
+  const rotateOn = typography.rotateText ?? false;
+
+  const R = wedge.outerRadius;
+  const radialScaleX = R === 0 ? 1 : geometry.outerRadiusX / R;
+  const radialScaleY = R === 0 ? 1 : geometry.outerRadiusY / R;
+  const sinA = Math.abs(Math.sin(midAngle));
+  const cosA = Math.abs(Math.cos(midAngle));
+  const boundX = sinA > 1e-6 ? geometry.width / 2 / (geometry.outerRadiusX * sinA) : Infinity;
+  const boundY = cosA > 1e-6 ? geometry.height / 2 / (geometry.outerRadiusY * cosA) : Infinity;
+  const visibleFactor = Math.min(1, boundX, boundY);
+  const visibleRadius = Math.max(wedge.innerRadius + 1, R * visibleFactor - 40);
+  const radialSpan = Math.max(1, visibleRadius - wedge.innerRadius);
+  const anglePerSlice = wedge.endAngle - wedge.startAngle;
+
+  const textAlign = typography.textAlign ?? 'middle';
+  const textAnchor = textAlign === 'start' ? 'start' : textAlign === 'end' ? 'end' : 'middle';
+
+  // When rotated, text lines run tangentially. The clipPath clips at the wedge's
+  // straight sides, so the binding constraint is the tangential width at the INNER
+  // radius (the narrowest part the block spans). At radius r, the available
+  // tangential width = 2 * r * sin(anglePerSlice/2) * radialScaleX.
+  const halfSlice = Math.sin(anglePerSlice / 2);
+  const tangentialAtInner = 2 * wedge.innerRadius * halfSlice * radialScaleX;
+  // lineMaxWidth = tangential width at inner radius, capped by span
+  const lineMaxWidthRot = Math.min(radialSpan, tangentialAtInner);
+  // Anchor offset: position block so inner edge sits at innerR
+  const anchorOffset = (radialSpan - lineMaxWidthRot) / 5;
+  const anchorR = wedge.innerRadius + radialSpan * 0.5 + anchorOffset;
+  const chordAtAnchor = 2 * anchorR * halfSlice * radialScaleX;
+
+  const anchor = rotateOn
+    ? {
+        x: anchorR * Math.sin(midAngle) * radialScaleX,
+        y: -anchorR * Math.cos(midAngle) * radialScaleY,
+      }
+    : wedge.content.anchor;
+
+  const halfChord = (rotateOn ? chordAtAnchor : wedge.safeBounds.width) / 2;
+
+  const rotateAngle = isFlipped ? midAngleDeg + 180 : midAngleDeg;
+  const rotateTransform = rotateOn
+    ? `rotate(${rotateAngle} ${anchor.x} ${anchor.y})`
+    : '';
+
+  const lineMaxWidth = rotateOn ? lineMaxWidthRot : wedge.safeBounds.width * 0.9;
+  const stackMaxSize = rotateOn ? chordAtAnchor * 0.75 : wedge.safeBounds.height;
+
   const metricResult = useMemo(
     () =>
       fitText(slice.metric, {
-        maxWidth: wedge.safeBounds.width * 0.9,
-        maxHeight: wedge.safeBounds.height * 0.32,
+        maxWidth: lineMaxWidth,
+        maxHeight: stackMaxSize * 0.32,
         fontFamily: typography.metricFont,
         minFontSize: 16,
         maxFontSize: 64,
       }),
-    [slice.metric, wedge.safeBounds, typography.metricFont]
+    [slice.metric, lineMaxWidth, stackMaxSize, typography.metricFont]
   );
 
   const labelResult = useMemo(
     () =>
       fitText(slice.label, {
-        maxWidth: wedge.safeBounds.width * 0.9,
-        maxHeight: wedge.safeBounds.height * (showIcon ? 0.3 : 0.4),
+        maxWidth: lineMaxWidth,
+        maxHeight: stackMaxSize * (showIcon ? 0.3 : 0.4),
         fontFamily: typography.labelFont,
         minFontSize: 11,
         maxFontSize: 28,
       }),
-    [slice.label, wedge.safeBounds, typography.labelFont, showIcon]
+    [slice.label, lineMaxWidth, stackMaxSize, typography.labelFont, showIcon]
   );
 
   const uploadedIcons = useProjectStore((state) => state.uploadedIcons);
@@ -84,23 +135,11 @@ export function SliceRenderer({
   const metricFill = autoContrast ? getContrastColor(color) : typography.metricColor;
   const labelFill = autoContrast ? getContrastColor(color) : typography.labelColor;
 
-  const textAlign = typography.textAlign ?? 'middle';
-  const textAnchor = textAlign === 'start' ? 'start' : textAlign === 'end' ? 'end' : 'middle';
-  const anchorX = wedge.content.anchor.x;
-  const halfChord = wedge.safeBounds.width / 2;
   const textX = textAlign === 'start'
-    ? anchorX - halfChord
+    ? anchor.x - halfChord
     : textAlign === 'end'
-      ? anchorX + halfChord
-      : anchorX;
-
-  const midAngle = (wedge.startAngle + wedge.endAngle) / 2;
-  const midAngleDeg = (midAngle * 180) / Math.PI;
-  const isFlipped = midAngleDeg > 90 || midAngleDeg < -90;
-
-  const rotateTransform = typography.rotateText
-    ? `rotate(${isFlipped ? midAngleDeg + 180 : midAngleDeg})`
-    : '';
+      ? anchor.x + halfChord
+      : anchor.x;
 
   const items: StackItem[] = [];
 
@@ -201,12 +240,13 @@ export function SliceRenderer({
     ),
   });
 
-  const gap = wedge.safeBounds.height * 0.04;
+  const gap = stackMaxSize * 0.04;
   const totalHeight =
     items.reduce((sum, item) => sum + item.height, 0) + gap * (items.length - 1);
-  let cursorY = wedge.content.anchor.y - totalHeight / 2;
+  let cursorY = anchor.y - totalHeight / 2;
+  const orderedItems = isFlipped ? [...items].reverse() : items;
   const renderedItems: ReactElement[] = [];
-  for (const item of items) {
+  for (const item of orderedItems) {
     renderedItems.push(item.render(cursorY));
     cursorY += item.height + gap;
   }
@@ -220,7 +260,7 @@ export function SliceRenderer({
       </clipPath>
 
       <g clipPath={`url(#wedge-clip-${wedge.id})`}>
-        <g transform={rotateTransform} style={{ transformOrigin: '0px 0px' }}>
+        <g transform={rotateTransform}>
           {renderedItems}
         </g>
       </g>
