@@ -12,10 +12,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { AspectRatioPreset, ASPECT_RATIOS } from '@/types/infographic';
+import { useI18n } from '@/i18n';
 
 const ASPECT_RATIO_KEYS = Object.keys(ASPECT_RATIOS) as AspectRatioPreset[];
 
 export function CanvasPanel() {
+  const { t } = useI18n();
   const canvas = useProjectStore((state) => state.canvas);
   const setCanvas = useProjectStore((state) => state.setCanvas);
   const setAspectRatio = useProjectStore((state) => state.setAspectRatio);
@@ -24,7 +26,7 @@ export function CanvasPanel() {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="aspect-ratio">Aspect Ratio</Label>
+        <Label htmlFor="aspect-ratio">{t('canvas.aspectRatio')}</Label>
         <Select value={canvas.aspectRatio} onValueChange={(v) => setAspectRatio(v as AspectRatioPreset)}>
           <SelectTrigger id="aspect-ratio">
             <SelectValue />
@@ -41,7 +43,7 @@ export function CanvasPanel() {
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
-          <Label htmlFor="canvas-width">Width</Label>
+          <Label htmlFor="canvas-width">{t('canvas.width')}</Label>
           <Input
             id="canvas-width"
             type="number"
@@ -56,7 +58,7 @@ export function CanvasPanel() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="canvas-height">Height</Label>
+          <Label htmlFor="canvas-height">{t('canvas.height')}</Label>
           <Input
             id="canvas-height"
             type="number"
@@ -73,7 +75,7 @@ export function CanvasPanel() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="bg-color">Background Color</Label>
+        <Label htmlFor="bg-color">{t('canvas.backgroundColor')}</Label>
         <div className="flex items-center gap-2">
           <Input
             id="bg-color"
@@ -92,7 +94,7 @@ export function CanvasPanel() {
 
       <div className="space-y-2">
         <Label htmlFor="segment-extension">
-          Segment Extension: {canvas.segmentExtension?.toFixed(1) ?? '1.3'}
+          {t('canvas.segmentExtension', { value: canvas.segmentExtension?.toFixed(1) ?? '1.3' })}
         </Label>
         <Input
           id="segment-extension"
@@ -103,12 +105,12 @@ export function CanvasPanel() {
           value={canvas.segmentExtension ?? 1.3}
           onChange={(e) => setCanvas({ segmentExtension: parseFloat(e.target.value) })}
         />
-        <p className="text-xs text-muted-foreground">How far segments extend beyond canvas (1.0 = to edge, 1.5 = 50% bleed)</p>
+        <p className="text-xs text-muted-foreground">{t('canvas.segmentExtensionHint')}</p>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="inner-radius-ratio">
-          Center Size: {((canvas.innerRadiusRatio ?? 0.18) * 100).toFixed(0)}%
+          {t('canvas.centerSize', { value: ((canvas.innerRadiusRatio ?? 0.18) * 100).toFixed(0) })}
         </Label>
         <Slider
           id="inner-radius-ratio"
@@ -121,7 +123,7 @@ export function CanvasPanel() {
       </div>
 
       <div className="flex items-center justify-between">
-        <Label htmlFor="show-dividers">Show Dividers</Label>
+        <Label htmlFor="show-dividers">{t('canvas.showDividers')}</Label>
         <Switch
           id="show-dividers"
           checked={canvas.showDividers ?? false}
@@ -132,7 +134,7 @@ export function CanvasPanel() {
       {(canvas.showDividers ?? false) && (
         <div className="space-y-2">
           <Label htmlFor="divider-width">
-            Divider Width: {canvas.dividerWidth ?? 2}px
+            {t('canvas.dividerWidth', { value: canvas.dividerWidth ?? 2 })}
           </Label>
           <Slider
             id="divider-width"
@@ -147,7 +149,7 @@ export function CanvasPanel() {
 
       <div className="space-y-2">
         <Label htmlFor="text-padding">
-          Text Position: {canvas.textPadding?.toFixed(2) ?? '0.40'}
+          {t('canvas.textPosition', { value: canvas.textPadding?.toFixed(2) ?? '0.40' })}
         </Label>
         <Input
           id="text-padding"
@@ -158,38 +160,38 @@ export function CanvasPanel() {
           value={canvas.textPadding ?? 0.4}
           onChange={(e) => setCanvas({ textPadding: parseFloat(e.target.value) })}
         />
-        <p className="text-xs text-muted-foreground">Text position within segments (0.0 = inner, 1.0 = outer)</p>
+        <p className="text-xs text-muted-foreground">{t('canvas.textPositionHint')}</p>
       </div>
 
       <Separator />
 
       <div className="space-y-2">
-        <Label htmlFor="brand-name">Brand Name</Label>
+        <Label htmlFor="brand-name">{t('canvas.brandName')}</Label>
         <Input
           id="brand-name"
           value={canvas.brandName ?? ''}
           onChange={(e) => setCanvas({ brandName: e.target.value || undefined })}
-          placeholder="e.g. SliceIt"
+          placeholder={t('canvas.brandNamePlaceholder')}
         />
       </div>
 
       <div className="flex items-center justify-between">
-        <Label htmlFor="show-brand-attribution">Show &ldquo;Presented by&rdquo; label</Label>
+        <Label htmlFor="show-brand-attribution">{t('canvas.showBrandAttribution')}</Label>
         <Switch
           id="show-brand-attribution"
           checked={canvas.showBrandAttribution ?? true}
           onCheckedChange={(checked) => setCanvas({ showBrandAttribution: checked })}
         />
       </div>
-      <p className="text-xs text-muted-foreground">Hides the center attribution when your logo already contains the brand.</p>
+      <p className="text-xs text-muted-foreground">{t('canvas.brandAttributionHint')}</p>
 
       <div className="space-y-2">
-        <Label htmlFor="source-note">Source Note</Label>
+        <Label htmlFor="source-note">{t('canvas.sourceNote')}</Label>
         <Input
           id="source-note"
           value={canvas.sourceNote ?? ''}
           onChange={(e) => setCanvas({ sourceNote: e.target.value || undefined })}
-          placeholder="Source: ..."
+          placeholder={t('canvas.sourceNotePlaceholder')}
         />
       </div>
     </div>

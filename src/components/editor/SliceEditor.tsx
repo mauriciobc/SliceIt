@@ -11,8 +11,10 @@ import { createUploadedImage } from '@/lib/fileUpload';
 import { IconPicker } from '@/components/editor/IconPicker';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/i18n';
 
 export function SliceEditor() {
+  const { t } = useI18n();
   const slices = useProjectStore((state) => state.slices);
   const selectedSliceId = useProjectStore((state) => state.selectedSliceId);
   const addSlice = useProjectStore((state) => state.addSlice);
@@ -49,10 +51,10 @@ export function SliceEditor() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">{slices.length} slices</div>
+        <div className="text-sm text-muted-foreground">{t('slices.count', { count: slices.length })}</div>
         <Button size="sm" onClick={addSlice}>
           <Plus className="mr-1 h-4 w-4" />
-          Add Slice
+          {t('slices.add')}
         </Button>
       </div>
 
@@ -64,6 +66,7 @@ export function SliceEditor() {
             index={index}
             isSelected={slice.id === selectedSliceId}
             isDragging={draggedId === slice.id}
+            t={t}
             draggable
             onSelect={() => setSelectedSliceId(slice.id)}
             onUpdate={(updates) => updateSlice(slice.id, updates)}
@@ -79,7 +82,7 @@ export function SliceEditor() {
         <>
           <Separator />
           <div className="space-y-3">
-            <h3 className="text-sm font-medium">Edit Selected Slice</h3>
+            <h3 className="text-sm font-medium">{t('slices.editSelected')}</h3>
             <SliceForm slice={selectedSlice} onUpdate={(u) => updateSlice(selectedSlice.id, u)} />
           </div>
         </>
@@ -94,6 +97,7 @@ interface SliceListItemProps {
   isSelected: boolean;
   isDragging?: boolean;
   draggable?: boolean;
+  t: (key: string, params?: Record<string, string | number>) => string;
   onSelect: () => void;
   onUpdate: (updates: Partial<Slice>) => void;
   onRemove: () => void;
@@ -108,6 +112,7 @@ function SliceListItem({
   isSelected,
   isDragging,
   draggable,
+  t,
   onSelect,
   onUpdate,
   onRemove,
@@ -135,21 +140,21 @@ function SliceListItem({
           onChange={(e) => onUpdate({ color: e.target.value })}
           className="h-6 w-6 flex-shrink-0 cursor-pointer rounded border p-0"
           onClick={(e) => e.stopPropagation()}
-          aria-label="Slice color"
+          aria-label={t('slices.ariaColor')}
         />
         <button
           type="button"
           onClick={onSelect}
           className="flex-1 truncate text-left text-sm font-medium"
         >
-          {slice.label || `Slice ${index + 1}`}
+          {slice.label || t('slices.emptyLabel', { index: index + 1 })}
         </button>
       </div>
       <button
         type="button"
         onClick={onRemove}
         className="text-muted-foreground hover:text-destructive"
-        aria-label="Remove slice"
+        aria-label={t('slices.ariaRemove')}
       >
         <Trash2 className="h-4 w-4" />
       </button>
@@ -163,6 +168,7 @@ interface SliceFormProps {
 }
 
 function SliceForm({ slice, onUpdate }: SliceFormProps) {
+  const { t } = useI18n();
   const uploadedIcons = useProjectStore((state) => state.uploadedIcons);
   const addUploadedIcon = useProjectStore((state) => state.addUploadedIcon);
   const typography = useProjectStore((state) => state.typography);
@@ -180,7 +186,7 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
   return (
     <div className="space-y-3">
       <div className="space-y-2">
-        <Label htmlFor="slice-metric">Metric</Label>
+        <Label htmlFor="slice-metric">{t('slices.metric')}</Label>
         <Input
           id="slice-metric"
           value={slice.metric}
@@ -189,7 +195,7 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="slice-label">Label</Label>
+        <Label htmlFor="slice-label">{t('slices.label')}</Label>
         <Input
           id="slice-label"
           value={slice.label}
@@ -198,7 +204,7 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="slice-color">Color</Label>
+        <Label htmlFor="slice-color">{t('slices.color')}</Label>
         <div className="flex items-center gap-2">
           <Input
             id="slice-color"
@@ -216,7 +222,7 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="slice-icon">Icon</Label>
+        <Label htmlFor="slice-icon">{t('slices.icon')}</Label>
         <IconPicker
           value={slice.icon}
           uploadedValue={slice.uploadedIconId}
@@ -231,10 +237,10 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
         <>
           <Separator className="my-4" />
           <div className="space-y-3">
-            <h4 className="text-sm font-medium">Icon Position Override</h4>
+            <h4 className="text-sm font-medium">{t('slices.iconPositionOverride')}</h4>
             
             <div className="flex items-center justify-between">
-              <Label htmlFor="use-global-vertical">Use global position</Label>
+              <Label htmlFor="use-global-vertical">{t('slices.useGlobalPosition')}</Label>
               <Switch
                 id="use-global-vertical"
                 checked={useGlobalVerticalPosition}
@@ -247,7 +253,7 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
             {!useGlobalVerticalPosition && (
               <div className="space-y-2">
                 <Label htmlFor="slice-icon-vertical-position">
-                  Position: {(slice.iconVerticalPosition ?? typography.iconVerticalPosition).toFixed(2)}
+                  {t('slices.position', { value: (slice.iconVerticalPosition ?? typography.iconVerticalPosition).toFixed(2) })}
                 </Label>
                 <Slider
                   id="slice-icon-vertical-position"
@@ -261,7 +267,7 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
             )}
 
             <div className="flex items-center justify-between">
-              <Label htmlFor="use-global-margin">Use global margin</Label>
+              <Label htmlFor="use-global-margin">{t('slices.useGlobalMargin')}</Label>
               <Switch
                 id="use-global-margin"
                 checked={useGlobalMargin}
@@ -274,7 +280,7 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
             {!useGlobalMargin && (
               <div className="space-y-2">
                 <Label htmlFor="slice-icon-margin">
-                  Margin: {(slice.iconMargin ?? typography.iconMargin)}px
+                  {t('slices.margin', { value: slice.iconMargin ?? typography.iconMargin })}
                 </Label>
                 <Slider
                   id="slice-icon-margin"

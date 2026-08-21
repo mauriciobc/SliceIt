@@ -10,6 +10,7 @@ import {
 import { UploadedImage } from '@/types/infographic';
 import { getIconComponent, searchIconNames } from '@/lib/icons';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/i18n';
 
 const MAX_RESULTS = 300;
 
@@ -35,6 +36,7 @@ export function IconPicker({
   onSelectUploaded,
   onUpload,
 }: IconPickerProps) {
+  const { t } = useI18n();
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
 
@@ -85,7 +87,7 @@ export function IconPicker({
               ? selectedUploaded.name
               : value
                 ? value
-                : 'Select an icon'}
+                : t('slices.selectIcon')}
           </span>
           {selectedUploaded || value ? (
             <X
@@ -105,7 +107,7 @@ export function IconPicker({
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search icons\u2026"
+              placeholder={t('slices.searchIcon')}
               className="pl-8"
               autoFocus
             />
@@ -117,7 +119,7 @@ export function IconPicker({
               className="inline-flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-md border px-2 py-1 text-xs hover:bg-muted/50"
             >
               <Upload className="h-3.5 w-3.5" />
-              Upload SVG/PNG
+              {t('slices.uploadIcon')}
               <input
                 id="icon-picker-upload"
                 type="file"
@@ -133,14 +135,14 @@ export function IconPicker({
               className="flex-1"
               onClick={clearSelection}
             >
-              None
+              {t('slices.none')}
             </Button>
           </div>
 
           {uploadedIcons.length > 0 && (
             <div className="space-y-2">
               <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                Uploaded
+                {t('slices.uploaded')}
               </div>
               <div className="grid grid-cols-8 gap-1">
                 {uploadedIcons.map((icon) => (
@@ -162,7 +164,7 @@ export function IconPicker({
           )}
 
           <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
-            {results.length} icons
+            {t('slices.browseIcons', { count: results.length })}
           </div>
           <div className="grid max-h-56 grid-cols-8 gap-1 overflow-y-auto rounded-md border p-2">
             {visibleResults.map((name) => {
@@ -183,13 +185,13 @@ export function IconPicker({
             })}
             {results.length === 0 && (
               <div className="col-span-8 py-4 text-center text-xs text-muted-foreground">
-                No icons found
+                {t('slices.noIcons')}
               </div>
             )}
           </div>
           {hasMore && (
             <div className="text-center text-[10px] text-muted-foreground">
-              Showing {MAX_RESULTS} of {results.length} \u2014 refine your search
+              {t('slices.moreIcons', { shown: MAX_RESULTS, total: results.length })}
             </div>
           )}
         </div>

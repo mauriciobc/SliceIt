@@ -13,8 +13,10 @@ import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { AlignLeft, AlignCenter, AlignRight, RotateCcw } from 'lucide-react';
 import { GOOGLE_FONT_OPTIONS } from '@/types/infographic';
+import { useI18n } from '@/i18n';
 
 export function TypographyPanel() {
+  const { t } = useI18n();
   const typography = useProjectStore((state) => state.typography);
   const setTypography = useProjectStore((state) => state.setTypography);
   const resetIconSettings = useProjectStore((state) => state.resetIconSettings);
@@ -23,7 +25,7 @@ export function TypographyPanel() {
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
-          <Label htmlFor="metric-font">Metric Font</Label>
+          <Label htmlFor="metric-font">{t('typography.metricFont')}</Label>
           <Select
             value={typography.metricFont}
             onValueChange={(v) => setTypography({ metricFont: v })}
@@ -41,7 +43,7 @@ export function TypographyPanel() {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="label-font">Label Font</Label>
+          <Label htmlFor="label-font">{t('typography.labelFont')}</Label>
           <Select
             value={typography.labelFont}
             onValueChange={(v) => setTypography({ labelFont: v })}
@@ -62,7 +64,7 @@ export function TypographyPanel() {
 
       <div className="space-y-2">
         <Label htmlFor="metric-font-weight">
-          Metric Weight: {typography.metricFontWeight ?? 700}
+          {t('typography.metricWeight', { value: typography.metricFontWeight ?? 700 })}
         </Label>
         <Slider
           id="metric-font-weight"
@@ -75,7 +77,7 @@ export function TypographyPanel() {
       </div>
 
       <div className="flex items-center justify-between">
-        <Label htmlFor="rotate-text">Rotate Text Radially</Label>
+        <Label htmlFor="rotate-text">{t('typography.rotateText')}</Label>
         <Switch
           id="rotate-text"
           checked={typography.rotateText ?? false}
@@ -84,7 +86,7 @@ export function TypographyPanel() {
       </div>
 
       <div className="space-y-2">
-        <Label>Text Alignment</Label>
+        <Label>{t('typography.textAlign')}</Label>
         <ToggleGroup
           type="single"
           value={typography.textAlign ?? 'middle'}
@@ -94,20 +96,20 @@ export function TypographyPanel() {
           variant="outline"
           size="sm"
         >
-          <ToggleGroupItem value="start" aria-label="Align left">
+          <ToggleGroupItem value="start" aria-label={t('typography.alignLeft')}>
             <AlignLeft className="h-4 w-4" />
           </ToggleGroupItem>
-          <ToggleGroupItem value="middle" aria-label="Align center">
+          <ToggleGroupItem value="middle" aria-label={t('typography.alignCenter')}>
             <AlignCenter className="h-4 w-4" />
           </ToggleGroupItem>
-          <ToggleGroupItem value="end" aria-label="Align right">
+          <ToggleGroupItem value="end" aria-label={t('typography.alignRight')}>
             <AlignRight className="h-4 w-4" />
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
 
       <div className="flex items-center justify-between">
-        <Label htmlFor="show-icons">Show Icons</Label>
+        <Label htmlFor="show-icons">{t('typography.showIcons')}</Label>
         <Switch
           id="show-icons"
           checked={typography.showIcons}
@@ -116,7 +118,7 @@ export function TypographyPanel() {
       </div>
 
       <div className="flex items-center justify-between">
-        <Label>Icon Placement</Label>
+        <Label>{t('typography.iconPlacement')}</Label>
         <Select
           value={typography.iconPlacement ?? 'outer'}
           onValueChange={(v) => setTypography({ iconPlacement: v as 'inner' | 'outer' })}
@@ -125,15 +127,15 @@ export function TypographyPanel() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="inner">Inner</SelectItem>
-            <SelectItem value="outer">Outer</SelectItem>
+            <SelectItem value="inner">{t('typography.inner')}</SelectItem>
+            <SelectItem value="outer">{t('typography.outer')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="metric-label-gap">
-          Metric–Label Gap
+          {t('typography.metricLabelGap')}
         </Label>
         <Slider
           id="metric-label-gap"
@@ -149,7 +151,7 @@ export function TypographyPanel() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="icon-size">Icon Size</Label>
+        <Label htmlFor="icon-size">{t('typography.iconSize')}</Label>
         <Slider
           id="icon-size"
           value={[typography.iconSize]}
@@ -165,7 +167,7 @@ export function TypographyPanel() {
 
       <div className="space-y-2">
         <Label htmlFor="icon-vertical-position">
-          Icon Offset: {typography.iconVerticalPosition.toFixed(2)}
+          {t('typography.iconOffset', { value: typography.iconVerticalPosition.toFixed(2) })}
         </Label>
         <Slider
           id="icon-vertical-position"
@@ -176,13 +178,13 @@ export function TypographyPanel() {
           onValueChange={([value]) => setTypography({ iconVerticalPosition: value })}
         />
         <div className="text-right text-xs text-muted-foreground">
-          Fine position within selected side (Inner/Outer)
+          {t('typography.iconOffsetHint')}
         </div>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="icon-margin">
-          Icon Margin: {typography.iconMargin}px
+          {t('typography.iconMargin', { value: typography.iconMargin })}
         </Label>
         <Slider
           id="icon-margin"
@@ -193,7 +195,7 @@ export function TypographyPanel() {
           onValueChange={([value]) => setTypography({ iconMargin: value })}
         />
         <div className="text-right text-xs text-muted-foreground">
-          Min distance from edge
+          {t('typography.iconMarginHint')}
         </div>
       </div>
 
@@ -204,7 +206,7 @@ export function TypographyPanel() {
         onClick={resetIconSettings}
       >
         <RotateCcw className="mr-2 h-4 w-4" />
-        Reset Icon Settings
+        {t('typography.resetIconSettings')}
       </Button>
     </div>
   );

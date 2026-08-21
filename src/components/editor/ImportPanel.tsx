@@ -8,8 +8,10 @@ import { parseCsv } from '@/lib/csvParser';
 import { Slice } from '@/types/infographic';
 import { FileUp, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/i18n';
 
 export function ImportPanel() {
+  const { t } = useI18n();
   const setSlices = useProjectStore((state) => state.setSlices);
   const setCenter = useProjectStore((state) => state.setCenter);
   const setPalette = useProjectStore((state) => state.setPalette);
@@ -87,9 +89,9 @@ export function ImportPanel() {
         <div className="flex flex-col items-center justify-center gap-2 text-center">
           <Upload className="h-5 w-5 text-muted-foreground" />
           <Label className="text-sm font-medium">
-            {isDragActive ? 'Drop file here' : 'Drag & drop CSV or JSON'}
+            {isDragActive ? t('import.dropActive') : t('import.dropInactive')}
           </Label>
-          <p className="text-xs text-muted-foreground">metric, label, color</p>
+          <p className="text-xs text-muted-foreground">{t('import.hint')}</p>
         </div>
       </div>
 
@@ -97,7 +99,7 @@ export function ImportPanel() {
         <Button variant="outline" size="sm" asChild className="relative">
           <label htmlFor="import-file" className="cursor-pointer">
             <FileUp className="mr-1 h-4 w-4" />
-            Choose File
+            {t('import.chooseFile')}
             <input
               id="import-file"
               type="file"
@@ -107,7 +109,7 @@ export function ImportPanel() {
             />
           </label>
         </Button>
-        <span className="text-xs text-muted-foreground">Or select a file</span>
+        <span className="text-xs text-muted-foreground">{t('import.orSelect')}</span>
       </div>
     </div>
   );

@@ -91,9 +91,9 @@ export function PalettePanel() {
       )}
 
       <div className="border-t pt-4 mt-4">
-        <h4 className="text-sm font-medium mb-3">Slice Style</h4>
+        <h4 className="text-sm font-medium mb-3">{t('palette.sliceStyle')}</h4>
         <div className="flex items-center justify-between mb-3">
-          <Label>Fill Mode</Label>
+          <Label>{t('palette.fillMode')}</Label>
           <Select
             value={sliceStyle.fillMode}
             onValueChange={(v) => setSliceStyle({ fillMode: v as SliceStyleMode })}
@@ -102,8 +102,8 @@ export function PalettePanel() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="solid">Solid</SelectItem>
-              <SelectItem value="radial">Radial</SelectItem>
+              <SelectItem value="solid">{t('palette.solid')}</SelectItem>
+              <SelectItem value="radial">{t('palette.radial')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -111,7 +111,7 @@ export function PalettePanel() {
         {sliceStyle.fillMode === 'radial' && (
           <div className="space-y-2">
             <Label htmlFor="gradient-intensity">
-              Gradient Intensity: {sliceStyle.gradientIntensity.toFixed(2)}
+              {t('palette.gradientIntensity', { value: sliceStyle.gradientIntensity.toFixed(2) })}
             </Label>
             <Slider
               id="gradient-intensity"
