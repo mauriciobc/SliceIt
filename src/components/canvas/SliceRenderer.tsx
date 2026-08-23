@@ -1,5 +1,5 @@
 import { useMemo, type ReactElement } from 'react';
-import { WedgeGeometry, CanvasGeometry } from '@/lib/geometry';
+import { WedgeGeometry, CanvasGeometry, computeStackGaps, computeIconNudge } from '@/lib/geometry';
 import { fitText } from '@/lib/textFit';
 import { Slice, TypographyConfig } from '@/types/infographic';
 import { getIconComponent } from '@/lib/icons';
@@ -141,6 +141,9 @@ export function SliceRenderer({
       ? anchor.x + halfChord
       : anchor.x;
 
+  const iconOffset = slice.iconVerticalPosition ?? typography.iconVerticalPosition;
+  const iconNudge = computeIconNudge(iconOffset, stackMaxSize);
+
   const items: StackItem[] = [];
 
   if (showIcon && (uploadedIcon || iconName)) {
@@ -150,36 +153,39 @@ export function SliceRenderer({
     items.push({
       key: 'icon',
       height: chipDiameter,
-      render: (y) => (
-        <g key="icon">
-          <circle
-            cx={textX}
-            cy={y + chipRadius}
-            r={chipRadius}
-            fill="#ffffff"
-            stroke="rgba(15,23,42,0.06)"
-            strokeWidth={1}
-          />
-          {uploadedIcon ? (
-            <image
-              href={uploadedIcon.dataUrl}
-              x={textX - size / 2}
-              y={y + chipRadius - size / 2}
-              width={size}
-              height={size}
-              preserveAspectRatio="xMidYMid meet"
+      render: (y) => {
+        const cy = y + iconNudge + chipRadius;
+        return (
+          <g key="icon">
+            <circle
+              cx={textX}
+              cy={cy}
+              r={chipRadius}
+              fill="#ffffff"
+              stroke="rgba(15,23,42,0.06)"
+              strokeWidth={1}
             />
-          ) : (
-            <SliceIcon
-              name={iconName as string}
-              x={textX}
-              y={y + chipRadius}
-              size={size * 0.72}
-              color="#0f172a"
-            />
-          )}
-        </g>
-      ),
+            {uploadedIcon ? (
+              <image
+                href={uploadedIcon.dataUrl}
+                x={textX - size / 2}
+                y={cy - size / 2}
+                width={size}
+                height={size}
+                preserveAspectRatio="xMidYMid meet"
+              />
+            ) : (
+              <SliceIcon
+                name={iconName as string}
+                x={textX}
+                y={cy}
+                size={size * 0.72}
+                color="#0f172a"
+              />
+            )}
+          </g>
+        );
+      },
     });
   }
 
@@ -240,15 +246,31 @@ export function SliceRenderer({
     ),
   });
 
-  const gap = stackMaxSize * 0.04;
-  const totalHeight =
-    items.reduce((sum, item) => sum + item.height, 0) + gap * (items.length - 1);
-  let cursorY = anchor.y - totalHeight / 2;
+  const { baseGap, metricLabelGapPx } = computeStackGaps(typography.metricLabelGap, stackMaxSize);
+
+  const adjacentGap = (a: string, b: string): number => {
+    const pair = [a, b].sort().join('-');
+    if (pair === 'icon-metric') return baseGap;
+    if (pair === 'label-metric') return metricLabelGapPx;
+    return 0;
+  };
+
   const orderedItems = isFlipped ? [...items].reverse() : items;
+
+  let totalHeight = 0;
+  let prevKey: string | null = null;
+  for (const item of orderedItems) {
+    totalHeight += item.height + (prevKey ? adjacentGap(prevKey, item.key) : 0);
+    prevKey = item.key;
+  }
+
+  let cursorY = anchor.y - totalHeight / 2;
   const renderedItems: ReactElement[] = [];
+  prevKey = null;
   for (const item of orderedItems) {
     renderedItems.push(item.render(cursorY));
-    cursorY += item.height + gap;
+    cursorY += item.height + (prevKey ? adjacentGap(prevKey, item.key) : 0);
+    prevKey = item.key;
   }
 
   return (

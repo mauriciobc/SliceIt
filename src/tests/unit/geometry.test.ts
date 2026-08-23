@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeCanvasGeometry, getLayoutMode } from '@/lib/geometry';
+import { computeCanvasGeometry, getLayoutMode, computeStackGaps, computeIconNudge } from '@/lib/geometry';
 import { CanvasConfig } from '@/types/infographic';
 
 function createCanvas(width: number, height: number): CanvasConfig {
@@ -121,6 +121,50 @@ describe('geometry', () => {
       const dOut = Math.hypot(wedge.iconOuterPoint.x, wedge.iconOuterPoint.y);
       expect(dIn).toBeCloseTo(innerR, 1);
       expect(dOut).toBeCloseTo(outerRX, 1);
+    }
+  });
+});
+
+describe('computeStackGaps', () => {
+  it('default metricLabelGap reproduces the current (uniform) gap', () => {
+    const { baseGap, metricLabelGapPx } = computeStackGaps(0.35, 100);
+    expect(baseGap).toBeCloseTo(4);
+    expect(metricLabelGapPx).toBeCloseTo(baseGap);
+  });
+
+  it('larger metricLabelGap widens the metric<->label gap only', () => {
+    const { baseGap, metricLabelGapPx } = computeStackGaps(0.8, 100);
+    expect(baseGap).toBeCloseTo(4);
+    expect(metricLabelGapPx).toBeGreaterThan(baseGap);
+    expect(metricLabelGapPx).toBeCloseTo((4 * 0.8) / 0.35);
+  });
+
+  it('tiny metricLabelGap shrinks the metric<->label gap', () => {
+    const { metricLabelGapPx } = computeStackGaps(0.05, 100);
+    expect(metricLabelGapPx).toBeLessThan(4);
+  });
+});
+
+describe('computeIconNudge', () => {
+  it('default offset produces zero nudge (current placement preserved)', () => {
+    expect(computeIconNudge(0.82, 100)).toBe(0);
+  });
+
+  it('slider extremes (0.32..1.32) map to symmetric +/-11', () => {
+    expect(computeIconNudge(0.32, 100)).toBeCloseTo(-11);
+    expect(computeIconNudge(1.32, 100)).toBeCloseTo(11);
+  });
+
+  it('clamps to +/- stackMaxSize * 0.22 for out-of-range values', () => {
+    expect(computeIconNudge(-1, 100)).toBeCloseTo(-22);
+    expect(computeIconNudge(2, 100)).toBeCloseTo(22);
+  });
+
+  it('stays within bounds for any value', () => {
+    for (const v of [-1, 0, 0.82, 1, 2]) {
+      const n = computeIconNudge(v, 100);
+      expect(n).toBeGreaterThanOrEqual(-22);
+      expect(n).toBeLessThanOrEqual(22);
     }
   });
 });

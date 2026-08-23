@@ -28,20 +28,31 @@ export interface WedgeGeometry {
   content: WedgeContentSlots;
 }
 
-export type IconPlacement = 'inner' | 'outer';
+export const METRIC_LABEL_GAP_DEFAULT = 0.35;
+export const ICON_OFFSET_DEFAULT = 0.82;
+export const ICON_NUDGE_FRACTION = 0.22;
 
-export function getIconPosition(
-  wedge: WedgeGeometry,
-  placement: IconPlacement,
-  offset: number
-): Point {
-  const t = placement === 'inner'
-    ? 0.12 + offset * 0.13
-    : 0.62 + offset * 0.33;
-  return {
-    x: wedge.iconInnerPoint.x + t * (wedge.iconOuterPoint.x - wedge.iconInnerPoint.x),
-    y: wedge.iconInnerPoint.y + t * (wedge.iconOuterPoint.y - wedge.iconInnerPoint.y),
-  };
+export interface StackGaps {
+  baseGap: number;
+  metricLabelGapPx: number;
+}
+
+// Spacing between stacked content items. `baseGap` is the icon<->metric gap and
+// stays fixed; `metricLabelGapPx` scales the metric<->label gap relative to the
+// default so that the saved default reproduces the current render exactly.
+export function computeStackGaps(metricLabelGap: number, stackMaxSize: number): StackGaps {
+  const baseGap = stackMaxSize * 0.04;
+  const metricLabelGapPx = baseGap * (metricLabelGap / METRIC_LABEL_GAP_DEFAULT);
+  return { baseGap, metricLabelGapPx };
+}
+
+// Relative radial nudge for the icon. At ICON_OFFSET_DEFAULT the nudge is zero
+// (current placement preserved); the slider scales relative to that. Clamped so
+// the icon can never reach the wedge edge regardless of aspect ratio.
+export function computeIconNudge(iconOffset: number, stackMaxSize: number): number {
+  const max = stackMaxSize * ICON_NUDGE_FRACTION;
+  const raw = (iconOffset - ICON_OFFSET_DEFAULT) * max;
+  return Math.max(-max, Math.min(max, raw));
 }
 
 export function getContentSlots(

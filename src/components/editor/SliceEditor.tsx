@@ -258,8 +258,8 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
                 <Slider
                   id="slice-icon-vertical-position"
                   value={[slice.iconVerticalPosition ?? typography.iconVerticalPosition]}
-                  min={0}
-                  max={1}
+                  min={0.32}
+                  max={1.32}
                   step={0.01}
                   onValueChange={([value]) => onUpdate({ iconVerticalPosition: value })}
                 />

@@ -66,7 +66,7 @@ export const translations: Record<Locale, TranslationResource> = {
     'typography.iconOffset': 'Icon Offset: {{value}}',
     'typography.iconOffsetHint': 'Fine position within selected side (Inner/Outer)',
     'typography.iconMargin': 'Icon Margin: {{value}}px',
-    'typography.iconMarginHint': 'Min distance from edge',
+    'typography.iconMarginHint': 'Content clearance from wedge edge (higher = more room, less edge clipping)',
     'typography.resetIconSettings': 'Reset Icon Settings',
 
     'center.title': 'Title',
@@ -214,7 +214,7 @@ export const translations: Record<Locale, TranslationResource> = {
     'typography.iconOffset': 'Deslocamento do \u00CDcone: {{value}}',
     'typography.iconOffsetHint': 'Posi\u00E7\u00E3o fina dentro do lado selecionado (Interno/Externo)',
     'typography.iconMargin': 'Margem do \u00CDcone: {{value}}px',
-    'typography.iconMarginHint': 'Dist\u00E2ncia m\u00EDnima da borda',
+    'typography.iconMarginHint': 'Folga do conteúdo em relação à borda (maior = mais espaço, menos corte)',
     'typography.resetIconSettings': 'Redefinir Configura\u00E7\u00F5es do \u00CDcone',
 
     'center.title': 'T\u00EDtulo',

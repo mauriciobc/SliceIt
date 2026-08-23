@@ -172,8 +172,8 @@ export function TypographyPanel() {
         <Slider
           id="icon-vertical-position"
           value={[typography.iconVerticalPosition]}
-          min={0}
-          max={1}
+          min={0.32}
+          max={1.32}
           step={0.01}
           onValueChange={([value]) => setTypography({ iconVerticalPosition: value })}
         />
