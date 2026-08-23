@@ -163,6 +163,29 @@ test.describe('locale-aware starter project', () => {
   });
 });
 
+
+test.describe('keyboard shortcuts reference', () => {
+  test('help popover lists the shortcuts and is localized', async ({ page }) => {
+    await page.goto('/');
+    await expect(page).toHaveTitle('SliceIt \u2014 Radial Infographic Generator');
+
+    await page.getByRole('button', { name: 'Keyboard shortcuts' }).click();
+    const popover = page.getByRole('dialog');
+    await expect(popover).toBeVisible();
+
+    // The popover is named and shows the undo shortcut.
+    await expect(popover).toHaveAttribute('aria-label', 'Keyboard shortcuts');
+    await expect(popover.getByText('Undo')).toBeVisible();
+    await expect(popover.getByText('Ctrl+Z')).toBeVisible();
+
+    // Switching language localizes title + popover (combo stays platform-bound).
+    await page.locator('header').getByRole('combobox').click();
+    await page.getByRole('option', { name: 'Português (BR)' }).click();
+    await expect(page).toHaveTitle('SliceIt \u2014 Gerador de Infogr\u00E1ficos Radiais');
+    await expect(page.getByRole('button', { name: 'Atalhos de teclado' })).toBeVisible();
+  });
+});
+
 test.describe('mobile layout', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 

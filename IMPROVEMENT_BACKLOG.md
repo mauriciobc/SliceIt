@@ -10,6 +10,14 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 
 ## Round status
 
+### 2026-01-05 (round 13): keyboard shortcuts reference + localized document title — ✅
+
+| # | Item | Severity | Impact | Status |
+|---|------|----------|--------|--------|
+| 1 | **In-app keyboard shortcuts reference** — header book icon opens a named, localized popover listing undo/redo/save/open (platform-aware Ctrl vs ⌘) | MEDIUM | Shortcuts are now discoverable in-app | ✅ |
+| 2 | **Localized document title** — PT-BR users get "Gerador de Infográficos Radiais" in the tab title (with lang sync) | LOW | Localized chrome | ✅ |
+| 3 | E2E: popover opens, is named, lists shortcuts, and the title + UI localize on language switch | MEDIUM | Feature locked in (30 e2e total) | ✅ |
+
 ### 2026-01-05 (round 12): export feedback toast + presentation focus mode — ✅
 
 | # | Item | Severity | Impact | Status |

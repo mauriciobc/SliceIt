@@ -17,6 +17,12 @@ export const translations: Record<Locale, TranslationResource> = {
     'theme.switchToSystem': 'Switch to system theme',
     'theme.switchToLight': 'Switch to light theme',
 
+    'shortcuts.title': 'Keyboard shortcuts',
+    'shortcuts.undo': 'Undo',
+    'shortcuts.redo': 'Redo',
+    'shortcuts.save': 'Save project',
+    'shortcuts.open': 'Open project',
+
     'language.label': 'Language',
     'language.en': 'English',
     'language.ptBR': 'Português (BR)',
@@ -186,6 +192,12 @@ export const translations: Record<Locale, TranslationResource> = {
     'theme.switchToDark': 'Mudar para tema escuro',
     'theme.switchToSystem': 'Mudar para tema do sistema',
     'theme.switchToLight': 'Mudar para tema claro',
+
+    'shortcuts.title': 'Atalhos de teclado',
+    'shortcuts.undo': 'Desfazer',
+    'shortcuts.redo': 'Refazer',
+    'shortcuts.save': 'Salvar projeto',
+    'shortcuts.open': 'Abrir projeto',
 
     'language.label': 'Idioma',
     'language.en': 'English',

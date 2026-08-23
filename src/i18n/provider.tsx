@@ -18,6 +18,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   // with the right locale.
   useEffect(() => {
     document.documentElement.lang = locale === 'pt-BR' ? 'pt-BR' : 'en';
+    document.title =
+      locale === 'pt-BR'
+        ? 'SliceIt \u2014 Gerador de Infogr\u00E1ficos Radiais'
+        : 'SliceIt \u2014 Radial Infographic Generator';
   }, [locale]);
 
   const handleSetLocale = useCallback((next: Locale) => {

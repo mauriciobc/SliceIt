@@ -7,9 +7,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Languages, Maximize2, Minimize2, Monitor, Moon, Sun } from 'lucide-react';
+import { BookOpen, Languages, Maximize2, Minimize2, Monitor, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/hooks/useTheme';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface AppHeaderProps {
   focusMode?: boolean;
@@ -21,6 +22,16 @@ export function AppHeader({ focusMode = false, onToggleFocus }: AppHeaderProps) 
   const { theme, toggleTheme } = useTheme();
 
   const handleChange = (value: string) => setLocale(value as Locale);
+
+  const isMac =
+    typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform ?? '');
+  const mod = isMac ? '\u2318' : 'Ctrl';
+  const shortcuts: Array<{ keys: string; label: string }> = [
+    { keys: mod + '+Z', label: t('shortcuts.undo') },
+    { keys: mod + '+Shift+Z / ' + mod + '+Y', label: t('shortcuts.redo') },
+    { keys: mod + '+S', label: t('shortcuts.save') },
+    { keys: mod + '+O', label: t('shortcuts.open') },
+  ];
 
   return (
     <header className="flex h-14 items-center border-b border-border bg-card px-4 shadow-sm">
@@ -41,6 +52,38 @@ export function AppHeader({ focusMode = false, onToggleFocus }: AppHeaderProps) 
             {focusMode ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
           </Button>
         )}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t('shortcuts.title')}
+              title={t('shortcuts.title')}
+            >
+              <BookOpen className="h-4 w-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-72" aria-label={t('shortcuts.title')} align="end">
+            <h2 className="mb-3 text-sm font-semibold">{t('shortcuts.title')}</h2>
+            <ul className="space-y-2">
+              {shortcuts.map((shortcut) => (
+                <li key={shortcut.label} className="flex items-center justify-between gap-3 text-xs">
+                  <span className="text-muted-foreground">{shortcut.label}</span>
+                  <span className="flex flex-wrap items-center justify-end gap-1">
+                    {shortcut.keys.split(' / ').map((combo) => (
+                      <kbd
+                        key={combo}
+                        className="rounded border bg-muted px-1.5 py-0.5 font-mono text-[10px]"
+                      >
+                        {combo}
+                      </kbd>
+                    ))}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </PopoverContent>
+        </Popover>
         <Button
           variant="ghost"
           size="icon"
