@@ -30,7 +30,12 @@ export function AppStatusBar() {
           ))}
         </div>
       )}
-      <span className="text-muted-foreground">{t('statusBar.ready')}</span>
+      <div className="flex items-center gap-4">
+        <span className="hidden text-muted-foreground md:inline">
+          {t('statusBar.shortcuts')}
+        </span>
+        <span className="text-muted-foreground">{t('statusBar.ready')}</span>
+      </div>
     </footer>
   );
 }

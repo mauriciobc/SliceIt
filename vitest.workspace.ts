@@ -4,7 +4,7 @@ export default defineWorkspace([
   {
     extends: './vitest.config.ts',
     test: {
-      include: ['src/tests/unit/**/*.test.ts'],
+      include: ['src/tests/unit/**/*.test.{ts,tsx}'],
     },
   },
 ]);

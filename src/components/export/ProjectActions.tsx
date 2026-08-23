@@ -138,7 +138,7 @@ export function ProjectActions() {
         onClick={undo}
         disabled={!canUndo}
         aria-label={t('actions.undo')}
-        title={t('actions.undo')}
+        title={`${t('actions.undo')} (Ctrl+Z)`}
       >
         <Undo2 className="h-4 w-4" />
       </Button>
@@ -148,7 +148,7 @@ export function ProjectActions() {
         onClick={redo}
         disabled={!canRedo}
         aria-label={t('actions.redo')}
-        title={t('actions.redo')}
+        title={`${t('actions.redo')} (Ctrl+Shift+Z)`}
       >
         <Redo2 className="h-4 w-4" />
       </Button>

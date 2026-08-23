@@ -1,3 +1,4 @@
+import { ErrorBoundary } from '@/components/app/ErrorBoundary';
 import { RadialCanvas } from '@/components/canvas/RadialCanvas';
 import { EditorPanel } from '@/components/editor/EditorPanel';
 import { ExportPanel } from '@/components/export/ExportPanel';
@@ -18,6 +19,7 @@ export function InfographicApp() {
       <AppHeader />
 
       <main className="flex flex-1 flex-col lg:flex-row lg:overflow-hidden">
+        <ErrorBoundary>
         {/* Full-width above the canvas on small screens; fixed 384px sidebar on lg+. */}
         <aside
           className={cn(
@@ -34,6 +36,7 @@ export function InfographicApp() {
           </div>
           <ExportPanel />
         </section>
+        </ErrorBoundary>
       </main>
 
       <AppStatusBar />

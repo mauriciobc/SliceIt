@@ -1,27 +1,43 @@
 # SliceIt — Radial Infographic Generator
 
-A standalone web application for infrastructure analysts to generate customizable radial infographics. No backend or authentication required.
+A standalone web application for infrastructure analysts to generate customizable
+radial infographics. No backend or authentication required. Works on desktop and
+mobile.
 
 ## Features
 
 - SVG-first rendering engine with automatic wedge generation
-- Multiple aspect ratios: 1:1, 4:5, 16:9, 9:16, 4:3, and custom dimensions
+- Aspect ratios: 1:1, 4:5, 16:9, 9:16, 4:3, and custom dimensions
 - Center wheel with title, subtitle, footer caption, and logo support
-- Three palette modes: single color, start/end gradient, and manual per-slice colors
-- Automatic center color derived from the palette
+- Three palette modes: single color, gradient, and manual per-slice colors
 - Text layout engine: horizontal text, auto-wrap, auto-scale, overflow detection
-- Built-in icon library (Lucide) and support for SVG/PNG icon uploads
-- CSV and JSON import for slice data
-- SVG and PNG export
-- Save/load project as JSON
+- **Rotated radial text with zero cropping at any aspect ratio**
+- Built-in icon library (Lucide) with search, SVG/PNG uploads, per-slice overrides
+- CSV and JSON import; SVG and PNG export with font embedding
+- **Save/load projects as JSON with tolerant loading of older save files**
+- **Undo/redo** (toolbar buttons or `Ctrl+Z` / `Ctrl+Shift+Z`)
+- **Dark mode** with persistent preference and OS-preference fallback
+- **Internationalization**: English and Portuguese (BR)
+- **Responsive layout** — editor stacks above the canvas on phones
 - Google Fonts integration
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+| --- | --- |
+| `Ctrl/Cmd+Z` | Undo |
+| `Ctrl/Cmd+Shift+Z`, `Ctrl/Cmd+Y` | Redo |
+| `Ctrl/Cmd+S` | Save project JSON |
+| `Ctrl/Cmd+O` | Open project JSON |
+
+Shortcuts are ignored while typing in inputs so native text editing keeps working.
 
 ## Tech Stack
 
 - React 19 + TypeScript
-- Vite
+- Vite (Rolldown) with vendor code splitting — ~57 kB initial JS
 - Tailwind CSS + shadcn/ui primitives
-- Zustand + Immer
+- Zustand + Immer (undo/redo via coalescing history)
 - d3-shape / d3-color
 - PapaParse, react-dropzone, html-to-image, file-saver
 - Vitest + Playwright
@@ -40,27 +56,36 @@ Open http://localhost:5173 in your browser.
 | Script | Description |
 | --- | --- |
 | `npm run dev` | Start development server |
-| `npm run build` | Build for production |
+| `npm run build` | Build for production (tsc + vite) |
 | `npm run lint` | Run ESLint |
 | `npm run preview` | Preview production build |
 | `npx vitest run` | Run unit tests |
-| `npx playwright test` | Run E2E smoke tests |
+| `npx playwright test` | Run E2E tests (auto-starts dev server) |
+
+## Verify Order
+
+Before merging changes, run in this order (CI runs the same checks):
+
+1. `npm run lint`
+2. `npm run build`
+3. `npx vitest run`
+4. `npx playwright test`
 
 ## Project Structure
 
 ```
 src/
   components/
-    app/          # Top-level app shell
+    app/          # App shell, error boundary
     canvas/       # SVG rendering components
     editor/       # Sidebar editors
-    export/       # Export and project actions
+    export/       # Export and project actions (toolbar)
     layout/       # Header and status bar
     ui/           # shadcn/ui primitive components
-  hooks/          # Custom React hooks
-  lib/            # Geometry, palette, text fit, export, parsers
-  store/          # Zustand store
-  tests/          # Unit and E2E tests
+  hooks/          # Custom React hooks (theme, fonts, resize)
+  lib/            # Geometry, palette, text fit, history, export, parsers
+  store/          # Zustand store (produce-based, undo/redo aware)
+  tests/          # Unit (Vitest) and E2E (Playwright) tests
   types/          # TypeScript domain types
 ```
 
@@ -85,6 +110,10 @@ metric,label,color
 }
 ```
 
+Projects saved from the app include icons, per-slice overrides and uploaded
+assets; older files missing newer fields are merged with current defaults on
+load instead of failing.
+
 ## Self-hosting with Portainer
 
 SliceIt is a static SPA (no backend) and ships with a multi-stage `Dockerfile` that
@@ -99,6 +128,13 @@ directly from this GitHub repository:
 To serve over HTTPS with a domain, change the site address in `Caddyfile` from
 `:80` to your domain (e.g. `sliceit.example.com`) and Caddy provisions TLS
 automatically.
+
+## Quality Gates
+
+- [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs lint, build, unit
+  and E2E tests on every push/PR and uploads the Playwright report on failure.
+- [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) publishes the
+  built app to GitHub Pages on `main`.
 
 ## License
 

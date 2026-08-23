@@ -142,6 +142,11 @@ export const translations: Record<Locale, TranslationResource> = {
       'Label "{{label}}" may overflow slice {{slice}}.',
 
     'statusBar.ready': 'Ready',
+    'statusBar.shortcuts': 'Ctrl+Z undo \u00B7 Ctrl+Shift+Z redo',
+
+    'error.title': 'Something went wrong',
+    'error.message': 'An unexpected error occurred while rendering. Your project data is safe \u2014 reloading keeps your edits.',
+    'error.reload': 'Reload app',
 
     'validation.maxSlices': 'Maximum {{max}} slices allowed.',
     'validation.recommendedSlices':
@@ -297,6 +302,11 @@ export const translations: Record<Locale, TranslationResource> = {
       'O r\u00F3tulo "{{label}}" pode transbordar a fatia {{slice}}.',
 
     'statusBar.ready': 'Pronto',
+    'statusBar.shortcuts': 'Ctrl+Z desfazer \u00B7 Ctrl+Shift+Z refazer',
+
+    'error.title': 'Algo deu errado',
+    'error.message': 'Ocorreu um erro inesperado ao renderizar. Seus dados do projeto est\u00E3o seguros \u2014 recarregar mant\u00E9m suas edi\u00E7\u00F5es.',
+    'error.reload': 'Recarregar aplicativo',
 
     'validation.maxSlices': 'M\u00E1ximo de {{max}} fatias permitido.',
     'validation.recommendedSlices':

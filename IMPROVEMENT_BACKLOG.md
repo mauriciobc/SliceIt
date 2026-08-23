@@ -10,6 +10,16 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 
 ## Round status
 
+### 2026-01-05 (round 5): CI quality gate, error boundary, shortcut affordances, README — ✅
+
+| # | Item | Severity | Impact | Status |
+|---|------|----------|--------|--------|
+| 1 | **CI quality gate** (.github/workflows/ci.yml) — lint + build + unit + e2e on every push/PR with Playwright report artifacts; previously main deployed with zero checks | HIGH | PR/regression safety; matches the deploy pipeline | ✅ |
+| 2 | **Error boundary** around the editor+canvas with translated fallback + reload; 2 unit tests (child crash → fallback) | MEDIUM | A render crash no longer blanks the app | ✅ |
+| 3 | **Shortcut affordances** — Ctrl+Z/Shift+Z hint in the status bar (md+) and on undo/redo tooltips | LOW | Discoverability of undo/redo | ✅ |
+| 4 | **README refresh** — new features (undo/redo, dark mode, i18n, mobile), keyboard shortcuts, verify order, CI links | LOW | Accurate professional documentation | ✅ |
+| 5 | Vitest include widened to .test.tsx (error-boundary test was silently not running) | LOW | Test-config correctness | ✅ |
+
 ### 2026-01-05 (round 4): dark mode + icon-picker pressed states — ✅
 
 | # | Item | Severity | Impact | Status |
