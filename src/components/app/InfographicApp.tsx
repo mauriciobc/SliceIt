@@ -17,18 +17,19 @@ export function InfographicApp() {
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <AppHeader />
 
-      <main className="flex flex-1 overflow-hidden">
+      <main className="flex flex-1 flex-col lg:flex-row lg:overflow-hidden">
+        {/* Full-width above the canvas on small screens; fixed 384px sidebar on lg+. */}
         <aside
           className={cn(
-            'w-96 flex-shrink-0 overflow-y-auto border-r border-border bg-card',
-            'p-4'
+            'w-full flex-shrink-0 overflow-y-auto border-b border-border bg-card p-4',
+            'lg:w-96 lg:border-b-0 lg:border-r'
           )}
         >
           <EditorPanel />
         </aside>
 
-        <section className="relative flex flex-1 flex-col overflow-hidden bg-muted/30">
-          <div className="flex flex-1 items-center justify-center overflow-hidden p-6">
+        <section className="relative flex min-h-[55vh] flex-1 flex-col overflow-hidden bg-muted/30 lg:min-h-0">
+          <div className="flex flex-1 items-center justify-center overflow-hidden p-4 sm:p-6">
             <RadialCanvas />
           </div>
           <ExportPanel />

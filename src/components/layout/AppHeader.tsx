@@ -17,14 +17,14 @@ export function AppHeader() {
   return (
     <header className="flex h-14 items-center border-b border-border bg-card px-4 shadow-sm">
       <h1 className="text-lg font-semibold tracking-tight">SliceIt</h1>
-      <span className="ml-2 text-xs text-muted-foreground">
+      <span className="ml-2 hidden text-xs text-muted-foreground sm:inline">
         {t('header.subtitle')}
       </span>
 
       <div className="ml-auto flex items-center gap-2">
         <Languages className="h-4 w-4 text-muted-foreground" />
         <Select value={locale} onValueChange={handleChange}>
-          <SelectTrigger className="h-8 w-[150px]" aria-label={t('language.label')}>
+          <SelectTrigger className="h-8 w-[118px] sm:w-[150px]" aria-label={t('language.label')}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

@@ -10,6 +10,14 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 
 ## Round status
 
+### 2026-01-05 (round 3): mobile responsiveness + validation coverage + data-workflow e2e — ✅
+
+| # | Item | Severity | Impact | Status |
+|---|------|----------|--------|--------|
+| 1 | **Mobile responsive layout** — editor stacks above canvas below lg (was a fixed 384px sidebar with no small-screen strategy); export bar wraps; header condenses | HIGH | App is usable down to phone viewports (390×844 verified) | ✅ |
+| 2 | **Validation coverage** — 6 unit tests for slice-count warnings/errors (min/recommended/hard-cap guards) | MEDIUM | Thresholds are now guarded in CI | ✅ |
+| 3 | **Data-workflow e2e** — CSV import, save→load round-trip fidelity, mobile-viewport usability | MEDIUM | 3 new e2e tests (19 total) | ✅ |
+
 ### 2026-01-05: undo/redo + tolerant project loading + subscription hygiene — ✅
 
 | # | Item | Severity | Impact | Status |
@@ -46,7 +54,6 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 ### UX & accessibility
 - ⬜ MEDIUM: keyboard accessibility of the icon picker grid (arrow-key navigation, roving tabindex) and color inputs.
 - ⬜ MEDIUM: #radial-canvas SVG has no role="img" + aria-label summary; exported SVGs should carry the same.
-- ⬜ LOW: mobile — editor sidebar is fixed w-96 and the canvas has no responsive strategy below ~900 px; consider drawer/toggle.
 - ⬜ LOW: audit remaining *Hint* translation strings for clarity (Icon Margin hint was just rewritten).
 
 ### Testing & CI

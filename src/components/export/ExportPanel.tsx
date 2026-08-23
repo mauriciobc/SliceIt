@@ -27,7 +27,7 @@ export function ExportPanel() {
   };
 
   return (
-    <div className="flex items-center justify-between border-t border-border bg-card p-3">
+    <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border bg-card p-3">
       <ProjectActions />
 
       <div className="flex items-center gap-2">
