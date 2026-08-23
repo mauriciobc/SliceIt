@@ -10,6 +10,16 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 
 ## Round status
 
+### 2026-01-05 (round 7): repo hygiene + export/document polish — ✅
+
+| # | Item | Severity | Impact | Status |
+|---|------|----------|--------|--------|
+| 1 | **Repo hygiene** — gauntlet/ evaluation artifacts gitignored (root-anchored); capture harness committed under scripts/gauntlet; superseded visual-debug spec removed; leftover probe scripts deleted | LOW | Clean working tree, no stray binaries in git | ✅ |
+| 2 | **Document lang follows locale** (screen readers pronounce the UI in the right language) | LOW | a11y correctness | ✅ |
+| 3 | **theme-color meta syncs light/dark; OG/Twitter meta tags** | LOW | Browser chrome + share-card quality | ✅ |
+| 4 | **Exported SVG carries <title>** so role=img naming survives into SVG/PNG files | LOW | Accessible shared images | ✅ |
+| 5 | **E2E: Ctrl+Z / Ctrl+Shift+Z shortcuts** now exercised (alongside the toolbar buttons) | MEDIUM | Shortcut regression guard | ✅ |
+
 ### 2026-01-05 (round 6): system theme, upload limits, icon-grid keyboard nav — ✅
 
 | # | Item | Severity | Impact | Status |
