@@ -155,8 +155,11 @@ export const translations: Record<Locale, TranslationResource> = {
     'export.resolution.hd': 'HD (1920px short edge)',
     'export.resolution.4k': '4K (3840px short edge)',
 
+    'actions.undo': 'Undo',
+    'actions.redo': 'Redo',
     'actions.save': 'Save',
     'actions.load': 'Load',
+    'actions.invalidFile': 'Could not load file \u2014 it is not a valid SliceIt project',
   },
 
   'pt-BR': {
@@ -304,7 +307,10 @@ export const translations: Record<Locale, TranslationResource> = {
     'export.resolution.hd': 'HD (1920px no lado menor)',
     'export.resolution.4k': '4K (3840px no lado menor)',
 
+    'actions.undo': 'Desfazer',
+    'actions.redo': 'Refazer',
     'actions.save': 'Salvar',
     'actions.load': 'Carregar',
+    'actions.invalidFile': 'N\u00E3o foi poss\u00EDvel carregar \u2014 arquivo n\u00E3o \u00E9 um projeto SliceIt v\u00E1lido',
   },
 };

@@ -61,6 +61,30 @@ test.describe('Radial Infographic Generator smoke flow', () => {
     await expect(canvas.getByText('MINUTE')).toBeVisible();
   });
 
+  test('undo and redo restore edited typography', async ({ page }) => {
+    // Open the Type tab (lazy-loaded panel) and focus the icon-size slider.
+    await page.getByRole('tab', { name: 'Type' }).click();
+    const slider = page.getByRole('slider', { name: 'Icon Size' });
+    await slider.focus();
+    const before = Number(await slider.getAttribute('aria-valuenow'));
+
+    // Arrow right bumps the value by the step (4).
+    await page.keyboard.press('ArrowRight');
+    await expect
+      .poll(() => slider.getAttribute('aria-valuenow'))
+      .toBe(String(before + 4));
+
+    // Undo restores the previous value; redo re-applies the edit.
+    await page.getByLabel('Undo').click();
+    await expect
+      .poll(() => slider.getAttribute('aria-valuenow'))
+      .toBe(String(before));
+    await page.getByLabel('Redo').click();
+    await expect
+      .poll(() => slider.getAttribute('aria-valuenow'))
+      .toBe(String(before + 4));
+  });
+
   test('exports SVG', async ({ page }) => {
     const [download] = await Promise.all([
       page.waitForEvent('download'),

@@ -25,7 +25,7 @@ export function TypographyPanel() {
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
-          <Label htmlFor="metric-font">{t('typography.metricFont')}</Label>
+          <Label id="metric-font-label" htmlFor="metric-font">{t('typography.metricFont')}</Label>
           <Select
             value={typography.metricFont}
             onValueChange={(v) => setTypography({ metricFont: v })}
@@ -43,7 +43,7 @@ export function TypographyPanel() {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="label-font">{t('typography.labelFont')}</Label>
+          <Label id="label-font-label" htmlFor="label-font">{t('typography.labelFont')}</Label>
           <Select
             value={typography.labelFont}
             onValueChange={(v) => setTypography({ labelFont: v })}
@@ -63,11 +63,12 @@ export function TypographyPanel() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="metric-font-weight">
+        <Label id="metric-font-weight-label" htmlFor="metric-font-weight">
           {t('typography.metricWeight', { value: typography.metricFontWeight ?? 700 })}
         </Label>
         <Slider
           id="metric-font-weight"
+          aria-labelledby="metric-font-weight-label"
           value={[typography.metricFontWeight ?? 700]}
           min={400}
           max={900}
@@ -77,7 +78,7 @@ export function TypographyPanel() {
       </div>
 
       <div className="flex items-center justify-between">
-        <Label htmlFor="rotate-text">{t('typography.rotateText')}</Label>
+        <Label id="rotate-text-label" htmlFor="rotate-text">{t('typography.rotateText')}</Label>
         <Switch
           id="rotate-text"
           checked={typography.rotateText ?? false}
@@ -109,7 +110,7 @@ export function TypographyPanel() {
       </div>
 
       <div className="flex items-center justify-between">
-        <Label htmlFor="show-icons">{t('typography.showIcons')}</Label>
+        <Label id="show-icons-label" htmlFor="show-icons">{t('typography.showIcons')}</Label>
         <Switch
           id="show-icons"
           checked={typography.showIcons}
@@ -134,11 +135,12 @@ export function TypographyPanel() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="metric-label-gap">
+        <Label id="metric-label-gap-label" htmlFor="metric-label-gap">
           {t('typography.metricLabelGap')}
         </Label>
         <Slider
           id="metric-label-gap"
+          aria-labelledby="metric-label-gap-label"
           value={[typography.metricLabelGap]}
           min={0.05}
           max={0.8}
@@ -151,9 +153,10 @@ export function TypographyPanel() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="icon-size">{t('typography.iconSize')}</Label>
+        <Label id="icon-size-label" htmlFor="icon-size">{t('typography.iconSize')}</Label>
         <Slider
           id="icon-size"
+          aria-labelledby="icon-size-label"
           value={[typography.iconSize]}
           min={16}
           max={96}
@@ -166,11 +169,12 @@ export function TypographyPanel() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="icon-vertical-position">
+        <Label id="icon-vertical-position-label" htmlFor="icon-vertical-position">
           {t('typography.iconOffset', { value: typography.iconVerticalPosition.toFixed(2) })}
         </Label>
         <Slider
           id="icon-vertical-position"
+          aria-labelledby="icon-vertical-position-label"
           value={[typography.iconVerticalPosition]}
           min={0.32}
           max={1.32}
@@ -183,11 +187,12 @@ export function TypographyPanel() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="icon-margin">
+        <Label id="icon-margin-label" htmlFor="icon-margin">
           {t('typography.iconMargin', { value: typography.iconMargin })}
         </Label>
         <Slider
           id="icon-margin"
+          aria-labelledby="icon-margin-label"
           value={[typography.iconMargin]}
           min={0}
           max={50}

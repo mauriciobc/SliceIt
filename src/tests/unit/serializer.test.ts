@@ -76,6 +76,33 @@ describe('projectSerializer', () => {
     expect(() => validateProject({ version: 1, slices: [{ id: 's1' }], canvas: { aspectRatio: 'BAD' } })).toThrow();
   });
 
+  it('legacy sections missing newer fields parse with defaults merged in', () => {
+    // Very old payload: typography exists but lacks fields added later
+    // (iconSize, metricLabelGap, iconVerticalPosition, iconMargin, ...).
+    const legacy = {
+      version: 1,
+      canvas: { aspectRatio: '1:1', dimensions: { width: 1080, height: 1080 }, backgroundColor: '#ffffff' },
+      palette: { mode: 'single', singleColor: '#0066FF', gradientStart: '#3CB371', gradientEnd: '#0077FF' },
+      center: {
+        title: 'T', subtitle: 'S', footerCaption: 'C', titleFont: 'Oswald', subtitleFont: 'Oswald',
+        captionFont: 'Inter', titleColor: '#fff', subtitleColor: '#fff', captionColor: '#ddd',
+        logos: [], logoPlacement: 'auto',
+      },
+      typography: { metricFont: 'Arial', labelFont: 'Arial' },
+      sliceStyle: { fillMode: 'solid', gradientIntensity: 0.35 },
+      slices: [{ id: 's1', metric: '10', label: 'X' }],
+    };
+    const restored = validateProject(legacy);
+    // Preserved user intent merged over defaults.
+    expect(restored.typography.metricFont).toBe('Arial');
+    expect(restored.typography.labelFont).toBe('Arial');
+    expect(restored.typography.iconSize).toBe(48);
+    expect(restored.typography.metricLabelGap).toBe(0.35);
+    expect(restored.typography.iconVerticalPosition).toBe(0.82);
+    expect(restored.typography.iconMargin).toBe(8);
+    expect(restored.typography.showIcons).toBe(true);
+  });
+
   it('rejects unknown palette mode values', () => {
     const project = createDefaultProject();
     project.palette.mode = 'neon' as ProjectState['palette']['mode'];

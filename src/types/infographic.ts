@@ -108,9 +108,31 @@ export interface ValidationMessage {
   params?: Record<string, string | number>;
 }
 
+
+export interface ProjectSnapshot {
+  canvas: CanvasConfig;
+  palette: PaletteConfig;
+  center: CenterConfig;
+  typography: TypographyConfig;
+  sliceStyle: SliceStyleConfig;
+  slices: Slice[];
+  uploadedIcons: UploadedImage[];
+}
+
+export interface HistoryEntry {
+  snapshot: ProjectSnapshot;
+  timestamp: number;
+}
+
+export interface HistoryState {
+  past: HistoryEntry[];
+  future: HistoryEntry[];
+}
+
 export interface EditorState {
   warnings: ValidationMessage[];
   errors: ValidationMessage[];
+  history: HistoryState;
 }
 
 export type AppState = ProjectState & EditorState;
@@ -190,5 +212,3 @@ export const GOOGLE_FONT_OPTIONS = [
   'Cairo',
   'Noto Sans',
 ];
-
-

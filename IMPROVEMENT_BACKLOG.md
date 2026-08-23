@@ -10,6 +10,14 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 
 ## Round status
 
+### 2026-01-05: undo/redo + tolerant project loading + subscription hygiene — ✅
+
+| # | Item | Severity | Impact | Status |
+|---|------|----------|--------|--------|
+| 1 | **Undo/redo** — pure history lib (coalescing drags into one step, 30-entry cap) wired into every store action; toolbar buttons + Ctrl/Cmd+Z / Shift+Z / Y shortcuts (guarded while typing) | HIGH | Biggest UX gap closed; 10 pure + 10 integration tests + e2e | ✅ |
+| 2 | **Tolerant project loading** — legacy sections missing newer fields are merged over defaults; invalid files now surface `actions.invalidFile` in the status bar instead of failing silently | HIGH | Save-files from older versions open instead of throwing | ✅ |
+| 3 | **ProjectActions wide-subscription fix** — was subscribing to the ENTIRE store (re-render on every edit); now 8 narrow selectors | MEDIUM | Removes a whole-app re-render source | ✅ |
+
 ### 2026-01-04: bundle + lint hygiene + serializer coverage — ✅
 
 | # | Item | Severity | Impact | Status |
@@ -34,7 +42,6 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 - ⬜ HIGH: validateProject throws on legacy payloads missing required fields (e.g. pre-feature typography without metricFont). Add a version-keyed migration layer (fill defaults → bump version → coerce) instead of hard failure, with a friendly "loaded with defaults" notice.
 - ⬜ MEDIUM: uploaded image size/type limits are not enforced (only accept attrs) — cap ~2 MB and reject huge data URLs before they bloat saves.
 - ⬜ MEDIUM: recomputeValidation has no unit tests; text-overflow warning thresholds are untested against exported SVG.
-- ⬜ MEDIUM: no undo/redo — every set* action is destructive. Add bounded Zustand history (patch-based, cap ~50) with keyboard shortcuts.
 
 ### UX & accessibility
 - ⬜ MEDIUM: keyboard accessibility of the icon picker grid (arrow-key navigation, roving tabindex) and color inputs.

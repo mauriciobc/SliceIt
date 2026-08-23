@@ -98,8 +98,28 @@ const projectSchema = z.object({
   uploadedIcons: z.array(uploadedImageSchema).default(defaults.uploadedIcons),
 });
 
+/**
+ * Tolerant loading for legacy/hand-edited files: a section that exists but is
+ * missing fields added in later versions (e.g. typography without iconSize)
+ * is merged over today's defaults so it still parses. Structurally broken
+ * payloads (non-objects, wrong slice lists, bad enums) still fail loudly.
+ */
+function mergeSectionDefaults(data: unknown): unknown {
+  if (typeof data !== 'object' || data === null) return data;
+  const payload = data as Record<string, unknown>;
+
+  const merged: Record<string, unknown> = { ...payload };
+  for (const key of ['canvas', 'palette', 'center', 'typography', 'sliceStyle'] as const) {
+    const section = payload[key];
+    if (typeof section === 'object' && section !== null && !Array.isArray(section)) {
+      merged[key] = { ...(defaults[key] as object), ...(section as object) };
+    }
+  }
+  return merged;
+}
+
 export function validateProject(data: unknown): ProjectState {
-  const parsed = projectSchema.parse(data);
+  const parsed = projectSchema.parse(mergeSectionDefaults(data));
   return {
     ...parsed,
     selectedSliceId: null,

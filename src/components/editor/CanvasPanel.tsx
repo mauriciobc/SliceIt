@@ -26,7 +26,7 @@ export function CanvasPanel() {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="aspect-ratio">{t('canvas.aspectRatio')}</Label>
+        <Label id="aspect-ratio-label" htmlFor="aspect-ratio">{t('canvas.aspectRatio')}</Label>
         <Select value={canvas.aspectRatio} onValueChange={(v) => setAspectRatio(v as AspectRatioPreset)}>
           <SelectTrigger id="aspect-ratio">
             <SelectValue />
@@ -43,7 +43,7 @@ export function CanvasPanel() {
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
-          <Label htmlFor="canvas-width">{t('canvas.width')}</Label>
+          <Label id="canvas-width-label" htmlFor="canvas-width">{t('canvas.width')}</Label>
           <Input
             id="canvas-width"
             type="number"
@@ -58,7 +58,7 @@ export function CanvasPanel() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="canvas-height">{t('canvas.height')}</Label>
+          <Label id="canvas-height-label" htmlFor="canvas-height">{t('canvas.height')}</Label>
           <Input
             id="canvas-height"
             type="number"
@@ -75,7 +75,7 @@ export function CanvasPanel() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="bg-color">{t('canvas.backgroundColor')}</Label>
+        <Label id="bg-color-label" htmlFor="bg-color">{t('canvas.backgroundColor')}</Label>
         <div className="flex items-center gap-2">
           <Input
             id="bg-color"
@@ -93,7 +93,7 @@ export function CanvasPanel() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="segment-extension">
+        <Label id="segment-extension-label" htmlFor="segment-extension">
           {t('canvas.segmentExtension', { value: canvas.segmentExtension?.toFixed(1) ?? '1.3' })}
         </Label>
         <Input
@@ -109,11 +109,12 @@ export function CanvasPanel() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="inner-radius-ratio">
+        <Label id="inner-radius-ratio-label" htmlFor="inner-radius-ratio">
           {t('canvas.centerSize', { value: ((canvas.innerRadiusRatio ?? 0.18) * 100).toFixed(0) })}
         </Label>
         <Slider
           id="inner-radius-ratio"
+          aria-labelledby="inner-radius-ratio-label"
           value={[canvas.innerRadiusRatio ?? 0.18]}
           min={0.1}
           max={0.4}
@@ -123,7 +124,7 @@ export function CanvasPanel() {
       </div>
 
       <div className="flex items-center justify-between">
-        <Label htmlFor="show-dividers">{t('canvas.showDividers')}</Label>
+        <Label id="show-dividers-label" htmlFor="show-dividers">{t('canvas.showDividers')}</Label>
         <Switch
           id="show-dividers"
           checked={canvas.showDividers ?? false}
@@ -133,11 +134,12 @@ export function CanvasPanel() {
 
       {(canvas.showDividers ?? false) && (
         <div className="space-y-2">
-          <Label htmlFor="divider-width">
+          <Label id="divider-width-label" htmlFor="divider-width">
             {t('canvas.dividerWidth', { value: canvas.dividerWidth ?? 2 })}
           </Label>
           <Slider
             id="divider-width"
+            aria-labelledby="divider-width-label"
             value={[canvas.dividerWidth ?? 2]}
             min={1}
             max={8}
@@ -148,7 +150,7 @@ export function CanvasPanel() {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="text-padding">
+        <Label id="text-padding-label" htmlFor="text-padding">
           {t('canvas.textPosition', { value: canvas.textPadding?.toFixed(2) ?? '0.40' })}
         </Label>
         <Input
@@ -166,7 +168,7 @@ export function CanvasPanel() {
       <Separator />
 
       <div className="space-y-2">
-        <Label htmlFor="brand-name">{t('canvas.brandName')}</Label>
+        <Label id="brand-name-label" htmlFor="brand-name">{t('canvas.brandName')}</Label>
         <Input
           id="brand-name"
           value={canvas.brandName ?? ''}
@@ -176,7 +178,7 @@ export function CanvasPanel() {
       </div>
 
       <div className="flex items-center justify-between">
-        <Label htmlFor="show-brand-attribution">{t('canvas.showBrandAttribution')}</Label>
+        <Label id="show-brand-attribution-label" htmlFor="show-brand-attribution">{t('canvas.showBrandAttribution')}</Label>
         <Switch
           id="show-brand-attribution"
           checked={canvas.showBrandAttribution ?? true}
@@ -186,7 +188,7 @@ export function CanvasPanel() {
       <p className="text-xs text-muted-foreground">{t('canvas.brandAttributionHint')}</p>
 
       <div className="space-y-2">
-        <Label htmlFor="source-note">{t('canvas.sourceNote')}</Label>
+        <Label id="source-note-label" htmlFor="source-note">{t('canvas.sourceNote')}</Label>
         <Input
           id="source-note"
           value={canvas.sourceNote ?? ''}

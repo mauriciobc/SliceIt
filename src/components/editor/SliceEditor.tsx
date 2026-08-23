@@ -186,7 +186,7 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
   return (
     <div className="space-y-3">
       <div className="space-y-2">
-        <Label htmlFor="slice-metric">{t('slices.metric')}</Label>
+        <Label id="slice-metric-label" htmlFor="slice-metric">{t('slices.metric')}</Label>
         <Input
           id="slice-metric"
           value={slice.metric}
@@ -195,7 +195,7 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="slice-label">{t('slices.label')}</Label>
+        <Label id="slice-label-label" htmlFor="slice-label">{t('slices.label')}</Label>
         <Input
           id="slice-label"
           value={slice.label}
@@ -204,7 +204,7 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="slice-color">{t('slices.color')}</Label>
+        <Label id="slice-color-label" htmlFor="slice-color">{t('slices.color')}</Label>
         <div className="flex items-center gap-2">
           <Input
             id="slice-color"
@@ -222,7 +222,7 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="slice-icon">{t('slices.icon')}</Label>
+        <Label id="slice-icon-label" htmlFor="slice-icon">{t('slices.icon')}</Label>
         <IconPicker
           value={slice.icon}
           uploadedValue={slice.uploadedIconId}
@@ -240,7 +240,7 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
             <h4 className="text-sm font-medium">{t('slices.iconPositionOverride')}</h4>
             
             <div className="flex items-center justify-between">
-              <Label htmlFor="use-global-vertical">{t('slices.useGlobalPosition')}</Label>
+              <Label id="use-global-vertical-label" htmlFor="use-global-vertical">{t('slices.useGlobalPosition')}</Label>
               <Switch
                 id="use-global-vertical"
                 checked={useGlobalVerticalPosition}
@@ -252,11 +252,12 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
             
             {!useGlobalVerticalPosition && (
               <div className="space-y-2">
-                <Label htmlFor="slice-icon-vertical-position">
+                <Label id="slice-icon-vertical-position-label" htmlFor="slice-icon-vertical-position">
                   {t('slices.position', { value: (slice.iconVerticalPosition ?? typography.iconVerticalPosition).toFixed(2) })}
                 </Label>
                 <Slider
                   id="slice-icon-vertical-position"
+                  aria-labelledby="slice-icon-vertical-position-label"
                   value={[slice.iconVerticalPosition ?? typography.iconVerticalPosition]}
                   min={0.32}
                   max={1.32}
@@ -267,7 +268,7 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
             )}
 
             <div className="flex items-center justify-between">
-              <Label htmlFor="use-global-margin">{t('slices.useGlobalMargin')}</Label>
+              <Label id="use-global-margin-label" htmlFor="use-global-margin">{t('slices.useGlobalMargin')}</Label>
               <Switch
                 id="use-global-margin"
                 checked={useGlobalMargin}
@@ -279,11 +280,12 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
             
             {!useGlobalMargin && (
               <div className="space-y-2">
-                <Label htmlFor="slice-icon-margin">
+                <Label id="slice-icon-margin-label" htmlFor="slice-icon-margin">
                   {t('slices.margin', { value: slice.iconMargin ?? typography.iconMargin })}
                 </Label>
                 <Slider
                   id="slice-icon-margin"
+                  aria-labelledby="slice-icon-margin-label"
                   value={[slice.iconMargin ?? typography.iconMargin]}
                   min={0}
                   max={50}

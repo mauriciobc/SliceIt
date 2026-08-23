@@ -60,7 +60,7 @@ export function PalettePanel() {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="palette-mode">{t('palette.mode')}</Label>
+        <Label id="palette-mode-label" htmlFor="palette-mode">{t('palette.mode')}</Label>
         <Select
           value={palette.mode}
           onValueChange={(v) => setPalette({ mode: v as PaletteMode })}
@@ -110,11 +110,12 @@ export function PalettePanel() {
 
         {sliceStyle.fillMode === 'radial' && (
           <div className="space-y-2">
-            <Label htmlFor="gradient-intensity">
+            <Label id="gradient-intensity-label" htmlFor="gradient-intensity">
               {t('palette.gradientIntensity', { value: sliceStyle.gradientIntensity.toFixed(2) })}
             </Label>
             <Slider
               id="gradient-intensity"
+              aria-labelledby="gradient-intensity-label"
               value={[sliceStyle.gradientIntensity]}
               min={0}
               max={1}

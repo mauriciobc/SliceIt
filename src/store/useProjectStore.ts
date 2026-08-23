@@ -18,6 +18,14 @@ import {
   UploadedImage,
   ValidationMessage,
 } from '@/types/infographic';
+import {
+  canRedo,
+  canUndo,
+  popUndo,
+  pushHistory,
+  snapshotProject,
+} from '@/lib/history';
+import type { ProjectSnapshot } from '@/types/infographic';
 import { createDefaultProject } from '@/lib/sampleData';
 import { nanoid } from '@/lib/nanoid';
 
@@ -45,6 +53,18 @@ function recomputeValidation(draft: AppState) {
   const { warnings, errors } = validateSliceCount(draft.slices.length);
   draft.warnings = warnings;
   draft.errors = errors;
+}
+
+function applySnapshot(draft: AppState, snapshot: ProjectSnapshot) {
+  draft.canvas = snapshot.canvas;
+  draft.palette = snapshot.palette;
+  draft.center = snapshot.center;
+  draft.typography = snapshot.typography;
+  draft.sliceStyle = snapshot.sliceStyle;
+  draft.slices = snapshot.slices;
+  draft.uploadedIcons = snapshot.uploadedIcons;
+  draft.selectedSliceId = null;
+  recomputeValidation(draft);
 }
 
 function createEmptySlice(): Slice {
@@ -78,12 +98,16 @@ interface ProjectActions {
   loadProject(project: ProjectState): void;
   resetProject(): void;
   resetIconSettings(): void;
+  undo(): void;
+  redo(): void;
+  reportError(error: ValidationMessage): void;
 }
 
 export const useProjectStore = create<AppState & ProjectActions>((set) => {
   const createPartialSetter = <T extends object>(field: keyof AppState) =>
     (partial: Partial<T>) =>
       set((state) => produce(state, (draft: Draft<AppState>) => {
+        draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
         Object.assign(draft[field] as T, partial);
       }));
 
@@ -91,133 +115,171 @@ export const useProjectStore = create<AppState & ProjectActions>((set) => {
     ...defaultProject,
     warnings: [],
     errors: [],
+    history: { past: [], future: [] },
 
     setCanvas: createPartialSetter<CanvasConfig>('canvas'),
-  setAspectRatio: (aspectRatio) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      draft.canvas.aspectRatio = aspectRatio;
-      draft.canvas.dimensions = updateDimensionsForAspectRatio(
-        aspectRatio,
-        draft.canvas.dimensions
-      );
-    })),
+    setAspectRatio: (aspectRatio) =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
+        draft.canvas.aspectRatio = aspectRatio;
+        draft.canvas.dimensions = updateDimensionsForAspectRatio(
+          aspectRatio,
+          draft.canvas.dimensions
+        );
+      })),
 
-  setCustomDimensions: (dimensions) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      draft.canvas.dimensions = dimensions;
-      draft.canvas.aspectRatio = 'Custom';
-    })),
+    setCustomDimensions: (dimensions) =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
+        draft.canvas.dimensions = dimensions;
+        draft.canvas.aspectRatio = 'Custom';
+      })),
 
-  setPalette: createPartialSetter<PaletteConfig>('palette'),
-  setCenter: createPartialSetter<CenterConfig>('center'),
-  setTypography: createPartialSetter<TypographyConfig>('typography'),
-  setSliceStyle: createPartialSetter<SliceStyleConfig>('sliceStyle'),
+    setPalette: createPartialSetter<PaletteConfig>('palette'),
+    setCenter: createPartialSetter<CenterConfig>('center'),
+    setTypography: createPartialSetter<TypographyConfig>('typography'),
+    setSliceStyle: createPartialSetter<SliceStyleConfig>('sliceStyle'),
 
-  addSlice: () =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      if (draft.slices.length >= HARD_MAX_SLICES) return;
-      draft.slices.push(createEmptySlice());
-      recomputeValidation(draft);
-    })),
-
-  removeSlice: (id) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      if (draft.slices.length <= MIN_SLICES) return;
-      draft.slices = draft.slices.filter((slice) => slice.id !== id);
-      if (draft.selectedSliceId === id) {
-        draft.selectedSliceId = null;
-      }
-      recomputeValidation(draft);
-    })),
-
-  updateSlice: (id, slice) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      const target = draft.slices.find((s) => s.id === id);
-      if (!target) return;
-      Object.assign(target, slice);
-    })),
-
-  reorderSlices: (slices) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      draft.slices = slices;
-    })),
-
-  setSelectedSliceId: (id) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      draft.selectedSliceId = id;
-    })),
-
-  setSlices: (slices) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      draft.slices = slices;
-      recomputeValidation(draft);
-    })),
-
-  addLogo: (image) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      if (draft.center.logos.length >= 3) return;
-      draft.center.logos.push(image);
-    })),
-
-  removeLogo: (id) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      draft.center.logos = draft.center.logos.filter((logo) => logo.id !== id);
-    })),
-
-  addUploadedIcon: (image) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      draft.uploadedIcons.push(image);
-    })),
-
-  removeUploadedIcon: (id) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      draft.uploadedIcons = draft.uploadedIcons.filter((icon) => icon.id !== id);
-      for (const slice of draft.slices) {
-        if (slice.uploadedIconId === id) {
-          slice.uploadedIconId = undefined;
-        }
-      }
-    })),
-
-  loadProject: (project) =>
-    set((state) => produce(state, (draft: Draft<AppState>) => {
-      draft.canvas = project.canvas;
-      draft.palette = project.palette;
-      draft.center = project.center;
-      draft.typography = project.typography;
-      draft.sliceStyle = project.sliceStyle;
-      draft.slices = project.slices;
-      draft.uploadedIcons = project.uploadedIcons ?? [];
-      draft.selectedSliceId = null;
-      recomputeValidation(draft);
-    })),
-
-  resetProject: () =>
-    set((state) =>
-      produce(state, (draft: Draft<AppState>) => {
-        const fresh = createDefaultProject();
-        draft.canvas = fresh.canvas;
-        draft.palette = fresh.palette;
-        draft.center = fresh.center;
-        draft.typography = fresh.typography;
-        draft.sliceStyle = fresh.sliceStyle;
-        draft.slices = fresh.slices;
-        draft.uploadedIcons = fresh.uploadedIcons;
-        draft.selectedSliceId = null;
+    addSlice: () =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        if (draft.slices.length >= HARD_MAX_SLICES) return;
+        draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
+        draft.slices.push(createEmptySlice());
         recomputeValidation(draft);
-      })
-    ),
+      })),
 
-  resetIconSettings: () =>
-    set((state) =>
-      produce(state, (draft: Draft<AppState>) => {
-        draft.typography.iconVerticalPosition = 0.82;
-        draft.typography.iconMargin = 8;
-        for (const slice of draft.slices) {
-          slice.iconVerticalPosition = undefined;
-          slice.iconMargin = undefined;
+    removeSlice: (id) =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        if (draft.slices.length <= MIN_SLICES) return;
+        draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
+        draft.slices = draft.slices.filter((slice) => slice.id !== id);
+        if (draft.selectedSliceId === id) {
+          draft.selectedSliceId = null;
         }
-      })
-    ),
-  }
-})
+        recomputeValidation(draft);
+      })),
+
+    updateSlice: (id, slice) =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        const target = draft.slices.find((s) => s.id === id);
+        if (!target) return;
+        draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
+        Object.assign(target, slice);
+      })),
+
+    reorderSlices: (slices) =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
+        draft.slices = slices;
+      })),
+
+    setSelectedSliceId: (id) =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        draft.selectedSliceId = id;
+      })),
+
+    setSlices: (slices) =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
+        draft.slices = slices;
+        recomputeValidation(draft);
+      })),
+
+    addLogo: (image) =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        if (draft.center.logos.length >= 3) return;
+        draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
+        draft.center.logos.push(image);
+      })),
+
+    removeLogo: (id) =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
+        draft.center.logos = draft.center.logos.filter((logo) => logo.id !== id);
+      })),
+
+    addUploadedIcon: (image) =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
+        draft.uploadedIcons.push(image);
+      })),
+
+    removeUploadedIcon: (id) =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
+        draft.uploadedIcons = draft.uploadedIcons.filter((icon) => icon.id !== id);
+        for (const slice of draft.slices) {
+          if (slice.uploadedIconId === id) {
+            slice.uploadedIconId = undefined;
+          }
+        }
+      })),
+
+    loadProject: (project) =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
+        applySnapshot(draft, project);
+        // Load is a hard boundary: the loaded project starts with its own history.
+        draft.history = { past: [], future: [] };
+      })),
+
+    resetProject: () =>
+      set((state) =>
+        produce(state, (draft: Draft<AppState>) => {
+          draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
+          applySnapshot(draft, createDefaultProject());
+          draft.history = { past: [], future: [] };
+        })
+      ),
+
+    resetIconSettings: () =>
+      set((state) =>
+        produce(state, (draft: Draft<AppState>) => {
+          draft.history = pushHistory(draft.history, snapshotProject(state), Date.now());
+          draft.typography.iconVerticalPosition = 0.82;
+          draft.typography.iconMargin = 8;
+          for (const slice of draft.slices) {
+            slice.iconVerticalPosition = undefined;
+            slice.iconMargin = undefined;
+          }
+        })
+      ),
+
+    undo: () =>
+      set((state) =>
+        produce(state, (draft: Draft<AppState>) => {
+          const { history, snapshot } = popUndo(draft.history);
+          if (!snapshot) return;
+          const current = snapshotProject(draft);
+          draft.history = {
+            past: history.past,
+            future: [{ snapshot: current, timestamp: Date.now() }, ...history.future],
+          };
+          applySnapshot(draft, snapshot);
+        })
+      ),
+
+    redo: () =>
+      set((state) =>
+        produce(state, (draft: Draft<AppState>) => {
+          const future = draft.history.future;
+          if (future.length === 0) return;
+          const [snapshot, ...rest] = future;
+          const current = snapshotProject(draft);
+          draft.history = {
+            past: [...draft.history.past, { snapshot: current, timestamp: Date.now() }],
+            future: rest,
+          };
+          applySnapshot(draft, snapshot.snapshot);
+        })
+      ),
+
+    reportError: (error) =>
+      set((state) => produce(state, (draft: Draft<AppState>) => {
+        draft.errors = [...draft.errors, error];
+      })),
+  };
+});
+
+// Re-exported convenience selectors for toolbar enable/disable states.
+export { canUndo, canRedo };
