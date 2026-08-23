@@ -220,6 +220,7 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
           />
           <Input
             type="text"
+            aria-label={t('slices.color')}
             value={slice.color ?? ''}
             onChange={(e) => onUpdate({ color: e.target.value })}
           />

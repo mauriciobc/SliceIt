@@ -86,7 +86,7 @@ export function ImportPanel() {
             : 'hover:border-muted-foreground/50 hover:bg-muted/30'
         )}
       >
-        <input {...getInputProps()} />
+        <input {...getInputProps({ 'aria-label': t('import.dropInactive') })} />
         <div className="flex flex-col items-center justify-center gap-2 text-center">
           <Upload className="h-5 w-5 text-muted-foreground" />
           <Label className="text-sm font-medium">

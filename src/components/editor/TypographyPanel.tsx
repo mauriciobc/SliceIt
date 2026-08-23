@@ -124,7 +124,7 @@ export function TypographyPanel() {
           value={typography.iconPlacement ?? 'outer'}
           onValueChange={(v) => setTypography({ iconPlacement: v as 'inner' | 'outer' })}
         >
-          <SelectTrigger className="w-[120px]">
+          <SelectTrigger className="w-[120px]" aria-label={t('typography.iconPlacement')}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

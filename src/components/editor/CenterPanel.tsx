@@ -112,6 +112,7 @@ export function CenterPanel() {
             />
             <Input
               type="text"
+              aria-label={t('center.titleColor')}
               value={center.titleColor}
               onChange={(e) => setCenter({ titleColor: e.target.value })}
             />
@@ -129,6 +130,7 @@ export function CenterPanel() {
             />
             <Input
               type="text"
+              aria-label={t('center.subtitleColor')}
               value={center.subtitleColor}
               onChange={(e) => setCenter({ subtitleColor: e.target.value })}
             />
@@ -162,6 +164,7 @@ export function CenterPanel() {
               />
               <Input
                 type="text"
+                aria-label={t('center.centerColor')}
                 value={center.centerColorOverride}
                 onChange={(e) => setCenter({ centerColorOverride: e.target.value })}
               />
@@ -182,6 +185,7 @@ export function CenterPanel() {
           />
           <Input
             type="text"
+            aria-label={t('center.captionColor')}
             value={center.captionColor}
             onChange={(e) => setCenter({ captionColor: e.target.value })}
           />

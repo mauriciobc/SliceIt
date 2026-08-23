@@ -143,7 +143,7 @@ export function IconPicker({
           ) : null}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-80">
+      <PopoverContent className="w-80" aria-label={t('slices.icon')}>
         <div className="space-y-3">
           <div className="relative">
             <Search className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

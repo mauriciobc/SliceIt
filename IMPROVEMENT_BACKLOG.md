@@ -10,6 +10,14 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 
 ## Round status
 
+### 2026-01-05 (round 9): automated accessibility compliance (axe-core in CI) — ✅
+
+| # | Item | Severity | Impact | Status |
+|---|------|----------|--------|--------|
+| 1 | **axe-core accessibility suite** — @axe-core/playwright scans the shell, every editor tab, and the icon picker popover; zero critical/serious violations allowed | HIGH | Automated a11y compliance in CI; 3 e2e tests | ✅ |
+| 2 | **Violation fixes** — inactive tab-trigger contrast (text-foreground/70), unlabeled dropzone file input, unnamed Radix Select triggers (Palette fillMode, Type iconPlacement), and 7 hex-edit text inputs across Canvas/Center/Palette/Slice gained proper accessible names | HIGH | Screen-reader/cat contrast passes axe | ✅ |
+| 3 | **prefers-reduced-motion** honored (global transition/animation guard) | LOW | Motion-sensitive users | ✅ |
+
 ### 2026-01-05 (round 8): fitText overflow fix, render-cost profiling, suite cleanup — ✅
 
 | # | Item | Severity | Impact | Status |

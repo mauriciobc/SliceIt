@@ -35,7 +35,12 @@ function ColorInputPair({
           onChange={(e) => onChange(e.target.value)}
           className="h-9 w-14 px-1 py-1"
         />
-        <Input type="text" value={value} onChange={(e) => onChange(e.target.value)} />
+        <Input
+          type="text"
+          aria-label={t(label)}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
       </div>
     </div>
   );
@@ -98,7 +103,7 @@ export function PalettePanel() {
             value={sliceStyle.fillMode}
             onValueChange={(v) => setSliceStyle({ fillMode: v as SliceStyleMode })}
           >
-            <SelectTrigger className="w-[120px]">
+            <SelectTrigger className="w-[120px]" aria-label={t('palette.fillMode')}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

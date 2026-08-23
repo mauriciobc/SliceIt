@@ -86,6 +86,7 @@ export function CanvasPanel() {
           />
           <Input
             type="text"
+            aria-label={t('canvas.backgroundColor')}
             value={canvas.backgroundColor}
             onChange={(e) => setCanvas({ backgroundColor: e.target.value })}
           />
