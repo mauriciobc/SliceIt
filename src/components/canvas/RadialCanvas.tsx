@@ -49,11 +49,10 @@ export function RadialCanvas() {
   return (
     <div
       ref={containerRef}
-      className={cn(
-        'relative flex h-full w-full items-center justify-center',
-        'overflow-hidden rounded-lg bg-background shadow-sm'
-      )}
       aria-label="Radial infographic preview"
+      className={cn(
+        'absolute inset-0 m-3 flex items-center justify-center overflow-hidden rounded-lg bg-background shadow-sm sm:m-6'
+      )}
     >
       <svg
         id="radial-canvas"

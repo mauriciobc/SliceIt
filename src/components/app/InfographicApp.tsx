@@ -29,7 +29,7 @@ export function InfographicApp() {
         </aside>
 
         <section className="relative flex min-h-[55vh] flex-1 flex-col overflow-hidden bg-muted/30 lg:min-h-0">
-          <div className="flex flex-1 items-center justify-center overflow-hidden p-4 sm:p-6">
+          <div className="relative flex-1">
             <RadialCanvas />
           </div>
           <ExportPanel />
