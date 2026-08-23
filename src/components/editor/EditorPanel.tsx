@@ -1,12 +1,25 @@
+import { lazy, Suspense } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CanvasPanel } from './CanvasPanel';
-import { PalettePanel } from './PalettePanel';
-import { CenterPanel } from './CenterPanel';
-import { TypographyPanel } from './TypographyPanel';
-import { SliceEditor } from './SliceEditor';
 import { ImportPanel } from './ImportPanel';
 import { TextWarnings } from './TextWarnings';
+import { Loader2 } from 'lucide-react';
 import { useI18n } from '@/i18n';
+
+// Editor tabs are heavy (icon pickers, color pickers, palettes…). Load each one
+// only when its tab is first activated to keep the initial bundle small.
+const SliceEditor = lazy(() => import('./SliceEditor').then((m) => ({ default: m.SliceEditor })));
+const CanvasPanel = lazy(() => import('./CanvasPanel').then((m) => ({ default: m.CanvasPanel })));
+const PalettePanel = lazy(() => import('./PalettePanel').then((m) => ({ default: m.PalettePanel })));
+const CenterPanel = lazy(() => import('./CenterPanel').then((m) => ({ default: m.CenterPanel })));
+const TypographyPanel = lazy(() => import('./TypographyPanel').then((m) => ({ default: m.TypographyPanel })));
+
+function PanelFallback() {
+  return (
+    <div className="flex min-h-24 items-center justify-center text-muted-foreground">
+      <Loader2 className="h-4 w-4 animate-spin" />
+    </div>
+  );
+}
 
 export function EditorPanel() {
   const { t } = useI18n();
@@ -22,19 +35,29 @@ export function EditorPanel() {
 
       <div className="flex-1 overflow-y-auto pr-1">
         <TabsContent value="slices" className="mt-0">
-          <SliceEditor />
+          <Suspense fallback={<PanelFallback />}>
+            <SliceEditor />
+          </Suspense>
         </TabsContent>
         <TabsContent value="canvas" className="mt-0">
-          <CanvasPanel />
+          <Suspense fallback={<PanelFallback />}>
+            <CanvasPanel />
+          </Suspense>
         </TabsContent>
         <TabsContent value="palette" className="mt-0">
-          <PalettePanel />
+          <Suspense fallback={<PanelFallback />}>
+            <PalettePanel />
+          </Suspense>
         </TabsContent>
         <TabsContent value="center" className="mt-0">
-          <CenterPanel />
+          <Suspense fallback={<PanelFallback />}>
+            <CenterPanel />
+          </Suspense>
         </TabsContent>
         <TabsContent value="typography" className="mt-0">
-          <TypographyPanel />
+          <Suspense fallback={<PanelFallback />}>
+            <TypographyPanel />
+          </Suspense>
         </TabsContent>
       </div>
 

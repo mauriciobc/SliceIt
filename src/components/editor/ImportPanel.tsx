@@ -4,7 +4,6 @@ import { useProjectStore } from '@/store/useProjectStore';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { nanoid } from '@/lib/nanoid';
-import { parseCsv } from '@/lib/csvParser';
 import { Slice } from '@/types/infographic';
 import { FileUp, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -51,6 +50,8 @@ export function ImportPanel() {
           // ignore invalid JSON
         }
       } else if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+        // papaparse is only loaded when a CSV is actually dropped.
+        const { parseCsv } = await import('@/lib/csvParser');
         const slices = parseCsv(text);
         setSlices(slices);
       }

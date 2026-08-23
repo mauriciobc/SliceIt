@@ -1,12 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useContext } from 'react';
 import {
   DEFAULT_LOCALE,
   LOCALE_STORAGE_KEY,
@@ -16,7 +8,7 @@ import {
   type TranslationParams,
 } from './translations';
 
-type TranslateFn = (key: string, params?: TranslationParams) => string;
+export type TranslateFn = (key: string, params?: TranslationParams) => string;
 
 function interpolate(template: string, params?: TranslationParams): string {
   if (!params) return template;
@@ -35,7 +27,7 @@ function resolve(key: string, locale: Locale): string {
   return key;
 }
 
-function translateWith(locale: Locale): TranslateFn {
+export function translateWith(locale: Locale): TranslateFn {
   return (key, params) => interpolate(resolve(key, locale), params);
 }
 
@@ -66,43 +58,23 @@ export function getLocale(): Locale {
   return currentLocale;
 }
 
+export function subscribeLocaleChange(cb: () => void): () => void {
+  subscribers.add(cb);
+  return () => {
+    subscribers.delete(cb);
+  };
+}
+
 export const t: TranslateFn = (key, params) =>
   translateWith(currentLocale)(key, params);
 
-interface I18nContextValue {
+export interface I18nContextValue {
   locale: Locale;
   setLocale: (locale: Locale) => void;
   t: TranslateFn;
 }
 
-const I18nContext = createContext<I18nContextValue | null>(null);
-
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(currentLocale);
-
-  useEffect(() => {
-    const handler = () => setLocaleState(currentLocale);
-    subscribers.add(handler);
-    return () => {
-      subscribers.delete(handler);
-    };
-  }, []);
-
-  const handleSetLocale = useCallback((next: Locale) => {
-    setLocale(next);
-  }, []);
-
-  const value = useMemo<I18nContextValue>(
-    () => ({
-      locale,
-      setLocale: handleSetLocale,
-      t: translateWith(locale),
-    }),
-    [locale, handleSetLocale]
-  );
-
-  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
-}
+export const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function useI18n(): I18nContextValue {
   const ctx = useContext(I18nContext);
