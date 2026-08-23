@@ -17,7 +17,7 @@ export function AppStatusBar() {
       )}
     >
       {hasMessages && (
-        <div className="flex items-center gap-3">
+        <div aria-live="polite" className="flex items-center gap-3">
           {errors.map((error) => (
             <span key={error.key} className="text-destructive">
               {t(error.key, error.params)}

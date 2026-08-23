@@ -10,6 +10,16 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 
 ## Round status
 
+### 2026-01-05 (round 8): fitText overflow fix, render-cost profiling, suite cleanup — ✅
+
+| # | Item | Severity | Impact | Status |
+|---|------|----------|--------|--------|
+| 1 | **fitText unbreakable-word fix** — a single word wider than the wedge was never flagged; silent cropping risk for space-less strings (found via an existing test's wrong expectation). Now flagged as overflow at every candidate size | HIGH | Zero-cropping guarantee extends to unbreakable strings | ✅ |
+| 2 | **Render-cost profile** — 36-slice stress: ~13 ms/commit (single update + flush, minus idle rAF) vs 16.7 ms frame budget; typical 8-slice projects far cheaper. **Memoization NOT applied** — evidence recorded instead of guessing | MEDIUM | Data-driven perf call | ✅ |
+| 3 | **Removed no-op visual-check.spec.ts** (screenshotted to /tmp/opencode, zero assertions) | LOW | Suite is now all real assertions | ✅ |
+| 4 | **textFit unit coverage 3 → 9** (wrap, min/max, empty, width invariant, unbreakable word) with a deterministic canvas-measure fallback pinned for jsdom | MEDIUM | Core layout engine guarded | ✅ |
+| 5 | **noscript message + aria-live on status-bar messages** | LOW | JS-off UX + error announcements | ✅ |
+
 ### 2026-01-05 (round 7): repo hygiene + export/document polish — ✅
 
 | # | Item | Severity | Impact | Status |

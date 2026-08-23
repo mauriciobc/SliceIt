@@ -75,8 +75,11 @@ export function fitText(
     const lines = wrapText(text, font, maxWidth);
     const lineHeight = fontSize * lineHeightRatio;
     const totalHeight = lines.length * lineHeight;
+    // An unbreakable word wider than the wedge (no spaces to break on) cannot
+    // be fitted by shrinking — flag it so the renderer never crops silently.
+    const tooWide = lines.some((line) => measureText(line, font) > maxWidth);
 
-    if (totalHeight <= maxHeight) {
+    if (!tooWide && totalHeight <= maxHeight) {
       return {
         lines,
         fontSize,
