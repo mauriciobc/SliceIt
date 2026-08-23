@@ -15,15 +15,23 @@ interface TextFitResult {
 
 const DEFAULT_SIZES = [40, 36, 32, 28, 24, 20, 16];
 
+// One shared offscreen canvas instead of a new allocation per measurement:
+// fitText runs for every slice on every edit, so per-call canvas creation
+// turns into dozens of allocations per keystroke at the 36-slice cap.
+let measureCanvas: HTMLCanvasElement | null = null;
+let measureCtx: CanvasRenderingContext2D | null = null;
+
 function measureText(text: string, font: string): number {
   if (typeof document === 'undefined') return text.length * 10;
 
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return text.length * 10;
+  if (!measureCanvas) {
+    measureCanvas = document.createElement('canvas');
+    measureCtx = measureCanvas.getContext('2d');
+  }
+  if (!measureCtx) return text.length * 10;
 
-  ctx.font = font;
-  return ctx.measureText(text).width;
+  measureCtx.font = font;
+  return measureCtx.measureText(text).width;
 }
 
 function wrapText(text: string, font: string, maxWidth: number): string[] {

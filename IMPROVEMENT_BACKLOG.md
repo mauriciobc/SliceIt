@@ -10,7 +10,29 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 
 ## Round status
 
-### 2026-01-05 (round 14): canvas pan/zoom — ✅
+### 2026-01-05 (round 15): export-fidelity fix, text-fit perf, bar assessment — ✅
+
+| # | Item | Severity | Impact | Status |
+|---|------|----------|--------|--------|
+| 1 | **Export-fidelity bug (real)** — PNG presets scaled the DISPLAYED preview, so "2x" of a fit-scaled 1080 canvas produced 1112px, never 2160. Presets now resolve against the ARTBOARD (viewBox): 1x/2x/4x multiply the artboard, social/hd/4k are absolute | HIGH | Downloads are exactly the promised pixels at every aspect ratio and preview scale | ✅ |
+| 2 | **Raster regression guard** — smoke e2e now decodes the PNG header (raw-signature + IHDR dims): 2x → 2160×2160, social → 1080×1080 | MEDIUM | Export fidelity is CI-protected (this is the check that caught the bug) | ✅ |
+| 3 | **textFit perf** — a single shared offscreen canvas for measureText instead of a new allocation per call (dozens per keystroke at 36 slices) | MEDIUM | Smoother typing on stress projects | ✅ |
+
+## Professional Bar Assessment (round 15)
+
+| Dimension | Evidence |
+|---|---|
+| Product completeness | PRD phases 1-5 all implemented (+ rotated text, locale-aware samples) |
+| Robustness | undo/redo (coalesced), tolerant legacy loading, ErrorBoundary, upload type/size/script guards, pan/zoom wrapper isolation, artifact-exact exports |
+| Quality automation | CI gate on push/PR (lint, tsc, 113 unit, 31 e2e incl. axe light+dark); 144 automated checks; deploy workflow |
+| Accessibility | axe-clean in both themes; named controls; roving icon grid; aria-live; reduced motion; lang/title sync; keyboard reference |
+| i18n | en/pt complete incl. locale-aware starter + localized chrome/meta/title |
+| Performance | 57 kB initial JS (38% smaller), vendor code-splitting, lazy panels, deferred export/CSV, cached text measurement, render profiling recorded |
+| UX | responsive mobile, dark/system theme, focus mode, pan/zoom, toasts, shortcuts popover |
+| Docs | README, IMPROVEMENT_BACKLOG.md, AGENTS.md, gauntlet evidence |
+| Security | no secrets, SVG script-scanning, (npm audit endpoint unavailable on the registry mirror — noted) |
+
+**Conclusion: bar met.** Remaining items (pixel baselines, schema-migration tests) are gold-plating candidates, not quality gaps.
 
 | # | Item | Severity | Impact | Status |
 |---|------|----------|--------|--------|

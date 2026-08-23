@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 
 test.describe('Radial Infographic Generator smoke flow', () => {
   test.beforeEach(async ({ page }) => {
@@ -112,5 +113,27 @@ test.describe('Radial Infographic Generator smoke flow', () => {
       page.getByRole('button', { name: 'PNG' }).click(),
     ]);
     expect(download.suggestedFilename()).toBe('infographic-2x.png');
+
+    // Raster fidelity guard: the 2x export of the default 1080x1080 project
+    // must be a 2160x2160 PNG. PNG dimensions live in the IHDR chunk
+    // (bytes 16-23, big-endian) — no image library needed.
+    const buffer = readFileSync((await download.path()) as string);
+    // The PNG magic header (0x89 'PNG' CR LF 0x1A LF) — compare raw bytes
+    // because Node's 'ascii' encoding masks 0x89 down to 0x09.
+    expect([...buffer.subarray(0, 8)]).toEqual([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    const width = buffer.readUInt32BE(16);
+    const height = buffer.readUInt32BE(20);
+    expect([width, height]).toEqual([2160, 2160]);
+
+    // Social preset must target 1080px on the short edge regardless of the
+    // preview scale in the UI.
+    await page.getByRole('combobox', { name: 'PNG resolution' }).click();
+    await page.getByRole('option', { name: /Social/ }).click();
+    const [socialDownload] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByRole('button', { name: 'PNG' }).click(),
+    ]);
+    const socialBuffer = readFileSync((await socialDownload.path()) as string);
+    expect([socialBuffer.readUInt32BE(16), socialBuffer.readUInt32BE(20)]).toEqual([1080, 1080]);
   });
 });
