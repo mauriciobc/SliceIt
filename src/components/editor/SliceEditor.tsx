@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Slice } from '@/types/infographic';
-import { createUploadedImage, validateImageFile } from '@/lib/fileUpload';
+import { createUploadedImage, validateImageFile, validateImageFileContent } from '@/lib/fileUpload';
 import { IconPicker } from '@/components/editor/IconPicker';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -178,6 +178,11 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
     const check = validateImageFile(file);
     if (!check.ok) {
       reportError({ key: check.reason === 'size' ? 'upload.tooLarge' : 'upload.invalidType' });
+      return;
+    }
+    const content = await validateImageFileContent(file);
+    if (!content.ok) {
+      reportError({ key: 'upload.scriptDetected' });
       return;
     }
     const image = await createUploadedImage(file);

@@ -3,7 +3,7 @@ import { nanoid } from '@/lib/nanoid';
 
 export const MAX_UPLOAD_BYTES = 2 * 1024 * 1024; // 2 MB
 
-export type UploadRejectReason = 'type' | 'size';
+export type UploadRejectReason = 'type' | 'size' | 'script';
 
 export function validateImageFile(file: File): { ok: true } | { ok: false; reason: UploadRejectReason } {
   if (!['image/svg+xml', 'image/png'].includes(file.type)) {
@@ -12,6 +12,20 @@ export function validateImageFile(file: File): { ok: true } | { ok: false; reaso
   if (file.size > MAX_UPLOAD_BYTES) {
     return { ok: false, reason: 'size' };
   }
+  return { ok: true };
+}
+
+/**
+ * Defense-in-depth for SVG uploads: scripts never execute inside <img>/<image>
+ * embedding, but the same file is often downloaded and opened directly, where
+ * they would run. Reject any SVG payload that embeds a <script> element.
+ */
+export async function validateImageFileContent(
+  file: File
+): Promise<{ ok: true } | { ok: false; reason: 'script' }> {
+  if (file.type !== 'image/svg+xml') return { ok: true };
+  const text = await file.text();
+  if (/<\s*script[\s>]/i.test(text)) return { ok: false, reason: 'script' };
   return { ok: true };
 }
 

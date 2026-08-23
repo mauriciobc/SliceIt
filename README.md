@@ -21,6 +21,19 @@ mobile.
 - **Responsive layout** — editor stacks above the canvas on phones
 - Google Fonts integration
 
+## What's New
+
+Recent hardening and polish (see [IMPROVEMENT_BACKLOG.md](IMPROVEMENT_BACKLOG.md) for the full trajectory):
+
+- **Undo/redo** with drag coalescing (a slider drag is one undo step), 30-step history
+- **Tolerant project loading** — older save files merge over current defaults instead of failing
+- **Resizable layout** — the editor stacks above the canvas on phones
+- **Dark mode** with a light/dark/system cycle and OS-preference fallback
+- **Accessibility**: automated axe-core checks in CI (shell, every editor tab, icon picker, both themes), roving tabindex in the icon grid, named form controls, aria-live status bar
+- **Performance**: ~57 kB initial JS (vendor-split via Rolldown), lazy editor tabs, deferred export/CSV modules, tree-shaken icon set
+- **Upload safety**: type + 2 MB cap, and SVGs containing scripts are rejected
+- **Automated quality gates**: lint, tsc build, 92 unit tests, 22 E2E tests on every push/PR
+
 ## Keyboard Shortcuts
 
 | Shortcut | Action |

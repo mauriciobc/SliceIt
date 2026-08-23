@@ -10,6 +10,14 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 
 ## Round status
 
+### 2026-01-05 (round 11): SVG upload script-sanity + README changelog — ✅
+
+| # | Item | Severity | Impact | Status |
+|---|------|----------|--------|--------|
+| 1 | **SVG script-sanity** — uploaded SVGs embedding <script> are rejected with a translated error in both upload paths (icons + logos); 6 new unit tests for type/size/script/content validation | MEDIUM | Defense-in-depth for downloaded SVGs (scripts don't run via <img>, but do when the file is opened directly) | ✅ |
+| 2 | **README "What's New"** section documenting the recent hardening wave | LOW | Professional changelog for users | ✅ |
+| 3 | **PRD gap audit** — all 5 MVP phases implemented; Rule 5 overflow warnings live in TextWarnings (verified) | — | Product completeness evidence | ✅ |
+
 ### 2026-01-05 (round 10): dark-mode axe coverage, popover guards, roving icon grid — ✅
 
 | # | Item | Severity | Impact | Status |

@@ -1,5 +1,5 @@
 import { useProjectStore } from '@/store/useProjectStore';
-import { createUploadedImage, validateImageFile } from '@/lib/fileUpload';
+import { createUploadedImage, validateImageFile, validateImageFileContent } from '@/lib/fileUpload';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import {
@@ -230,6 +230,11 @@ function LogoUploader() {
       const check = validateImageFile(file);
       if (!check.ok) {
         reportError({ key: check.reason === 'size' ? 'upload.tooLarge' : 'upload.invalidType' });
+        continue;
+      }
+      const content = await validateImageFileContent(file);
+      if (!content.ok) {
+        reportError({ key: 'upload.scriptDetected' });
         continue;
       }
       const image = await createUploadedImage(file);
