@@ -10,6 +10,15 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 
 ## Round status
 
+### 2026-01-05 (round 10): dark-mode axe coverage, popover guards, roving icon grid — ✅
+
+| # | Item | Severity | Impact | Status |
+|---|------|----------|--------|--------|
+| 1 | **Dark-mode axe scan** — accessibility suite now runs under colorScheme=dark + dark theme (shell + Type tab) and stays clean | MEDIUM | Contrast compliance in both themes | ✅ |
+| 2 | **Popover Escape guard** — e2e proves the icon picker closes on Escape and focus returns to the trigger (Radix behaviour locked in) | LOW | Keyboard UX regression guard | ✅ |
+| 3 | **Roving tabindex in the icon grid** — 268 tab stops collapsed to one; arrow/Home/End nav with focus tracking, tab-to-select, reset on search | MEDIUM | Keyboard users can actually Tab through the picker | ✅ |
+| 4 | SliceRenderer + geometry read-through — no correctness bugs found (memo deps stable, clip ids unique, empty text safe) | — | Review evidence recorded | ✅ |
+
 ### 2026-01-05 (round 9): automated accessibility compliance (axe-core in CI) — ✅
 
 | # | Item | Severity | Impact | Status |

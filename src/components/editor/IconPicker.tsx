@@ -40,6 +40,7 @@ export function IconPicker({
   const { t } = useI18n();
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
+  const [gridFocusIndex, setGridFocusIndex] = useState(0);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // Arrow-key navigation across the icon grid (8 columns): left/right move one
@@ -80,6 +81,7 @@ export function IconPicker({
     next = Math.max(0, Math.min(next, buttons.length - 1));
     if (next === current) return;
     e.preventDefault();
+    setGridFocusIndex(next);
     buttons[next].focus();
   };
 
@@ -149,7 +151,10 @@ export function IconPicker({
             <Search className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setGridFocusIndex(0);
+              }}
               placeholder={t('slices.searchIcon')}
               className="pl-8"
               autoFocus
@@ -215,13 +220,16 @@ export function IconPicker({
             onKeyDown={handleGridKeyDown}
             className="grid max-h-56 grid-cols-8 gap-1 overflow-y-auto rounded-md border p-2"
           >
-            {visibleResults.map((name) => {
+            {visibleResults.map((name, index) => {
+              const isGridFocus = index === gridFocusIndex;
               return (
                 <button
                   key={name}
                   type="button"
                   title={name}
                   aria-pressed={value === name}
+                  tabIndex={isGridFocus ? 0 : -1}
+                  onFocus={() => setGridFocusIndex(index)}
                   onClick={() => selectBuiltin(name)}
                   className={cn(
                     'flex h-9 w-9 items-center justify-center rounded-md hover:bg-muted/50',

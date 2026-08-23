@@ -79,6 +79,22 @@ test.describe('theme', () => {
 
 });
 
+
+test.describe('popover behaviour', () => {
+  test('icon picker closes on Escape and returns focus to the trigger', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'API CALLS PROCESSED' }).click();
+    const trigger = page.getByRole('button', { name: 'Globe' });
+    await trigger.click();
+    const search = page.getByPlaceholder(/search icons/i);
+    await expect(search).toBeVisible();
+
+    await page.keyboard.press('Escape');
+    await expect(search).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+  });
+});
+
 test.describe('mobile layout', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 

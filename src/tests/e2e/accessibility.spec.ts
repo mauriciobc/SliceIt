@@ -28,6 +28,23 @@ test.describe('accessibility', () => {
     }
   });
 
+  test('dark mode scans clean', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.goto('/');
+    await page.evaluate(() => localStorage.setItem('sliceit:theme', 'dark'));
+    await page.reload();
+    await expect(page.locator('html')).toHaveClass(/dark/);
+
+    const ids = await seriousViolations(page);
+    expect(ids).toEqual([]);
+
+    // Spot-check the Type tab (sliders, selects) in dark mode too.
+    await page.getByRole('tab', { name: 'Type' }).click();
+    await page.waitForTimeout(250);
+    const idsType = await seriousViolations(page);
+    expect(idsType).toEqual([]);
+  });
+
   test('icon picker popover scans clean', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('button', { name: 'API CALLS PROCESSED' }).click();
