@@ -64,6 +64,7 @@ export function RadialCanvas() {
         aria-label={t('canvas.ariaLabel')}
         className="max-h-full max-w-full"
       >
+        <title>{t('canvas.ariaLabel')}</title>
         <defs>
           {sliceStyle.fillMode === 'radial' && geometry.wedges.map((wedge, index) => {
             const color = hsl(sliceColors[index]);

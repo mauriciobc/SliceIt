@@ -74,7 +74,17 @@ test.describe('Radial Infographic Generator smoke flow', () => {
       .poll(() => slider.getAttribute('aria-valuenow'))
       .toBe(String(before + 4));
 
-    // Undo restores the previous value; redo re-applies the edit.
+    // Keyboard shortcuts: Ctrl+Z undoes, Ctrl+Shift+Z redoes.
+    await page.keyboard.press('Control+z');
+    await expect
+      .poll(() => slider.getAttribute('aria-valuenow'))
+      .toBe(String(before));
+    await page.keyboard.press('Control+Shift+z');
+    await expect
+      .poll(() => slider.getAttribute('aria-valuenow'))
+      .toBe(String(before + 4));
+
+    // Toolbar buttons too.
     await page.getByLabel('Undo').click();
     await expect
       .poll(() => slider.getAttribute('aria-valuenow'))

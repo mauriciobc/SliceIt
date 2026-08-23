@@ -25,6 +25,11 @@ export function getStoredTheme(): Theme {
 export function applyTheme(theme: Theme): void {
   const resolved = resolveTheme(theme);
   document.documentElement.classList.toggle('dark', resolved === 'dark');
+  // Keep the browser chrome color in sync with the palette.
+  const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  if (meta) {
+    meta.content = resolved === 'dark' ? '#18181b' : '#ffffff';
+  }
   try {
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
   } catch {

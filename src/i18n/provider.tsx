@@ -14,6 +14,12 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => subscribeLocaleChange(() => setLocaleState(getLocale())), []);
 
+  // Keep the document language in sync so screen readers pronounce the UI
+  // with the right locale.
+  useEffect(() => {
+    document.documentElement.lang = locale === 'pt-BR' ? 'pt-BR' : 'en';
+  }, [locale]);
+
   const handleSetLocale = useCallback((next: Locale) => {
     setLocale(next);
   }, []);

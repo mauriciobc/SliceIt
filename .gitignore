@@ -22,3 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Gauntlet evaluation artifacts (transient outputs + reference images)
+/gauntlet/
