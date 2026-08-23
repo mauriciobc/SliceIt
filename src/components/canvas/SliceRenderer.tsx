@@ -268,8 +268,12 @@ export function SliceRenderer({
   const renderedItems: ReactElement[] = [];
   prevKey = null;
   for (const item of orderedItems) {
+    // Apply the gap BEFORE the current item (matching the totalHeight loop
+    // above) so the first pair of items is separated too — previously the
+    // first between-item gap was skipped, leaving icon and metric touching.
+    if (prevKey) cursorY += adjacentGap(prevKey, item.key);
     renderedItems.push(item.render(cursorY));
-    cursorY += item.height + (prevKey ? adjacentGap(prevKey, item.key) : 0);
+    cursorY += item.height;
     prevKey = item.key;
   }
 
