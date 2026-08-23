@@ -127,6 +127,42 @@ test.describe('focus mode and feedback', () => {
   });
 });
 
+
+test.describe('locale-aware starter project', () => {
+  test('switching locale swaps the untouched starter project', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('#radial-canvas').getByText('EVERY')).toBeVisible();
+
+    await page.locator('header').getByRole('combobox').click();
+    await page.getByRole('option', { name: 'Português (BR)' }).click();
+    // Center title swaps to the Brazilian starter; 'BRASIL' also appears inside
+    // a slice label, so target the exact center text with .first().
+    await expect(
+      page.locator('#radial-canvas').getByText('BRASIL', { exact: true }).first()
+    ).toBeVisible();
+    await expect(page.locator('#radial-canvas').getByText(/203/)).toBeVisible();
+
+    // Switching back restores the English starter (both directions swap).
+    await page.locator('header').getByRole('combobox').click();
+    await page.getByRole('option', { name: 'English' }).click();
+    await expect(page.locator('#radial-canvas').getByText('EVERY')).toBeVisible();
+  });
+
+  test('edited projects are never clobbered by language switches', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'API CALLS PROCESSED' }).click();
+    await page.locator('#slice-label').fill('CUSTOM LABEL');
+
+    await page.locator('header').getByRole('combobox').click();
+    await page.getByRole('option', { name: 'Português (BR)' }).click();
+
+    // Edited content survives: the custom label stays and the EN starter is
+    // intentionally NOT swapped.
+    await expect(page.locator('#radial-canvas').getByText(/CUSTOM/)).toBeVisible();
+    await expect(page.locator('#radial-canvas').getByText('EVERY')).toBeVisible();
+  });
+});
+
 test.describe('mobile layout', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 

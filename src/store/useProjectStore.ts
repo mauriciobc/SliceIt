@@ -28,6 +28,8 @@ import {
 import type { ProjectSnapshot } from '@/types/infographic';
 import { createDefaultProject } from '@/lib/sampleData';
 import { nanoid } from '@/lib/nanoid';
+import { getLocale, subscribeLocaleChange } from '@/i18n/runtime';
+import type { Locale } from '@/i18n/translations';
 
 function validateSliceCount(count: number): Pick<AppState, 'warnings' | 'errors'> {
   const warnings: ValidationMessage[] = [];
@@ -76,6 +78,30 @@ function createEmptySlice(): Slice {
 }
 
 const defaultProject = createDefaultProject();
+
+/**
+ * Serialize only the user-facing project content, dropping id fields (slice
+ * ids, logo ids, uploaded-icon ids) so two structurally identical projects are
+ * comparable regardless of generated ids.
+ */
+function toComparableProject(state: AppState | ProjectState): string {
+  return JSON.stringify(
+    {
+      canvas: state.canvas,
+      palette: state.palette,
+      center: state.center,
+      typography: state.typography,
+      sliceStyle: state.sliceStyle,
+      slices: state.slices,
+      uploadedIcons: state.uploadedIcons,
+    },
+    (key, value) => (key === 'id' ? undefined : value)
+  );
+}
+
+function isDefaultContent(state: AppState, locale: Locale): boolean {
+  return toComparableProject(state) === toComparableProject(createDefaultProject(locale));
+}
 
 interface ProjectActions {
   setCanvas(canvas: Partial<CanvasConfig>): void;
@@ -279,6 +305,24 @@ export const useProjectStore = create<AppState & ProjectActions>((set) => {
         draft.errors = [...draft.errors, error];
       })),
   };
+});
+
+// Keep the pristine starter project in sync with the active language: when the
+// locale changes and the current project is still the untouched default sample
+// (nothing edited, no logo/icon upload), swap it for the new locale's example.
+// Edited or loaded projects are never clobbered.
+let appliedDefaultLocale: Locale = getLocale();
+
+subscribeLocaleChange(() => {
+  const nextLocale = getLocale();
+  if (nextLocale === appliedDefaultLocale) return;
+  const previousLocale = appliedDefaultLocale;
+  appliedDefaultLocale = nextLocale;
+
+  const state = useProjectStore.getState();
+  if (isDefaultContent(state, previousLocale)) {
+    state.resetProject();
+  }
 });
 
 // Re-exported convenience selectors for toolbar enable/disable states.
