@@ -103,6 +103,7 @@ export const translations: Record<Locale, TranslationResource> = {
     'palette.radial': 'Radial',
     'palette.gradientIntensity': 'Gradient Intensity: {{value}}',
 
+    'canvas.ariaLabel': 'Radial infographic preview',
     'canvas.aspectRatio': 'Aspect Ratio',
     'canvas.custom': 'Custom',
     'canvas.width': 'Width',
@@ -251,6 +252,7 @@ export const translations: Record<Locale, TranslationResource> = {
     'palette.radial': 'Radial',
     'palette.gradientIntensity': 'Intensidade do Gradiente: {{value}}',
 
+    'canvas.ariaLabel': 'Pr\u00E9-visualiza\u00E7\u00E3o do infogr\u00E1fico radial',
     'canvas.aspectRatio': 'Propor\u00E7\u00E3o',
     'canvas.custom': 'Personalizado',
     'canvas.width': 'Largura',

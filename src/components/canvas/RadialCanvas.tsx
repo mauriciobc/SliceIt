@@ -8,8 +8,10 @@ import { useGoogleFont } from '@/hooks/useGoogleFont';
 import { CenterWheel } from './CenterWheel';
 import { SliceRenderer } from './SliceRenderer';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/i18n';
 
 export function RadialCanvas() {
+  const { t } = useI18n();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvas = useProjectStore((state) => state.canvas);
   const slices = useProjectStore((state) => state.slices);
@@ -60,6 +62,7 @@ export function RadialCanvas() {
         viewBox={`0 0 ${geometry.width} ${geometry.height}`}
         xmlns="http://www.w3.org/2000/svg"
         role="img"
+        aria-label={t('canvas.ariaLabel')}
         className="max-h-full max-w-full"
       >
         <defs>
