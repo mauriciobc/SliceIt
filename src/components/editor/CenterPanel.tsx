@@ -1,4 +1,5 @@
 import { useProjectStore } from '@/store/useProjectStore';
+import { createUploadedImage, validateImageFile } from '@/lib/fileUpload';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import {
@@ -215,20 +216,20 @@ function LogoUploader() {
   const logos = useProjectStore((state) => state.center.logos);
   const addLogo = useProjectStore((state) => state.addLogo);
   const removeLogo = useProjectStore((state) => state.removeLogo);
+  const reportError = useProjectStore((state) => state.reportError);
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
     for (const file of Array.from(files)) {
-      if (!['image/svg+xml', 'image/png'].includes(file.type)) continue;
-      const dataUrl = await readFileAsDataURL(file);
-      addLogo({
-        id: Math.random().toString(36).slice(2),
-        name: file.name,
-        dataUrl,
-        type: file.type as 'image/svg+xml' | 'image/png',
-      });
+      const check = validateImageFile(file);
+      if (!check.ok) {
+        reportError({ key: check.reason === 'size' ? 'upload.tooLarge' : 'upload.invalidType' });
+        continue;
+      }
+      const image = await createUploadedImage(file);
+      addLogo(image);
     }
   };
 
@@ -260,13 +261,4 @@ function LogoUploader() {
       </div>
     </div>
   );
-}
-
-function readFileAsDataURL(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 }

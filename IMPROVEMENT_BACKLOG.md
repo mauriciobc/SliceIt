@@ -10,6 +10,14 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 
 ## Round status
 
+### 2026-01-05 (round 6): system theme, upload limits, icon-grid keyboard nav — ✅
+
+| # | Item | Severity | Impact | Status |
+|---|------|----------|--------|--------|
+| 1 | **System theme option** — 3-state cycle (light/dark/system); system follows live OS changes; FOUC guard + e2e cover the cycle and persistence | MEDIUM | Users with OS-follow preference are served | ✅ |
+| 2 | **Upload validation** — shared validateImageFile (type + 2 MB cap) wired into icon and logo uploads; failures surface a translated status-bar error instead of silent no-ops | MEDIUM | Prevents multi-MB data URLs bloating saves/state | ✅ |
+| 3 | **Icon-grid keyboard nav** — arrow/Home/End roving focus in the icon picker (8-col grid, clamped edges); 3 unit tests | LOW | Keyboard-only icon selection | ✅ |
+
 ### 2026-01-05 (round 5): CI quality gate, error boundary, shortcut affordances, README — ✅
 
 | # | Item | Severity | Impact | Status |

@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Languages, Moon, Sun } from 'lucide-react';
+import { Languages, Monitor, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -29,10 +29,28 @@ export function AppHeader() {
           variant="ghost"
           size="icon"
           onClick={toggleTheme}
-          aria-label={t(theme === 'dark' ? 'theme.switchToLight' : 'theme.switchToDark')}
-          title={t(theme === 'dark' ? 'theme.switchToLight' : 'theme.switchToDark')}
+          aria-label={
+            theme === 'light'
+              ? t('theme.switchToDark')
+              : theme === 'dark'
+                ? t('theme.switchToSystem')
+                : t('theme.switchToLight')
+          }
+          title={
+            theme === 'light'
+              ? t('theme.switchToDark')
+              : theme === 'dark'
+                ? t('theme.switchToSystem')
+                : t('theme.switchToLight')
+          }
         >
-          {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          {theme === 'light' ? (
+            <Sun className="h-4 w-4" />
+          ) : theme === 'dark' ? (
+            <Moon className="h-4 w-4" />
+          ) : (
+            <Monitor className="h-4 w-4" />
+          )}
         </Button>
         <Languages className="h-4 w-4 text-muted-foreground" />
         <Select value={locale} onValueChange={handleChange}>

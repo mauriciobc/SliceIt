@@ -51,20 +51,32 @@ test.describe('data workflows', () => {
 
 
 test.describe('theme', () => {
-  test('dark mode toggle applies and persists across reloads', async ({ page }) => {
+  test('theme cycles system -> light -> dark and persists', async ({ page }) => {
     await page.goto('/');
+    // A fresh context has no stored preference -> system mode (resolves to
+    // light under Playwright's default color scheme).
+    await page.getByRole('button', { name: 'Switch to light theme' }).click();
     await expect(page.locator('html')).not.toHaveClass(/dark/);
+    expect(await page.evaluate(() => localStorage.getItem('sliceit:theme'))).toBe('light');
 
+    // light -> dark
     await page.getByRole('button', { name: 'Switch to dark theme' }).click();
     await expect(page.locator('html')).toHaveClass(/dark/);
 
-    // The editor chrome is dark while the canvas keeps its light infographic bg.
+    // Persisted across reloads via the pre-paint FOUC guard + useTheme.
     await page.reload();
     await expect(page.locator('html')).toHaveClass(/dark/);
 
-    await page.getByRole('button', { name: 'Switch to light theme' }).click();
+    // dark -> system (resolves back to light here)
+    await page.getByRole('button', { name: 'Switch to system theme' }).click();
     await expect(page.locator('html')).not.toHaveClass(/dark/);
+    expect(await page.evaluate(() => localStorage.getItem('sliceit:theme'))).toBe('system');
+
+    // system -> light
+    await page.getByRole('button', { name: 'Switch to light theme' }).click();
+    expect(await page.evaluate(() => localStorage.getItem('sliceit:theme'))).toBe('light');
   });
+
 });
 
 test.describe('mobile layout', () => {

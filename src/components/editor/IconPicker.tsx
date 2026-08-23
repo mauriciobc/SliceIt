@@ -1,4 +1,4 @@
-import { useMemo, useState, createElement } from 'react';
+import { useMemo, useRef, useState, createElement } from 'react';
 import { Search, Upload, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { useI18n } from '@/i18n';
 
 const MAX_RESULTS = 300;
+const GRID_COLUMNS = 8;
 
 function BuiltinIcon({ name, className }: { name: string; className?: string }) {
   const Icon = getIconComponent(name);
@@ -39,6 +40,48 @@ export function IconPicker({
   const { t } = useI18n();
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  // Arrow-key navigation across the icon grid (8 columns): left/right move one
+  // column, up/down move one row, Home/End jump to the first/last icon.
+  const handleGridKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const grid = resultsRef.current;
+    if (!grid) return;
+    const buttons = Array.from(
+      grid.querySelectorAll('button[type="button"]')
+    ) as HTMLButtonElement[];
+    if (buttons.length === 0) return;
+    const current = buttons.indexOf(document.activeElement as HTMLButtonElement);
+    if (current === -1) return;
+
+    let next: number;
+    switch (e.key) {
+      case 'ArrowRight':
+        next = current + 1;
+        break;
+      case 'ArrowLeft':
+        next = current - 1;
+        break;
+      case 'ArrowDown':
+        next = current + GRID_COLUMNS;
+        break;
+      case 'ArrowUp':
+        next = current - GRID_COLUMNS;
+        break;
+      case 'Home':
+        next = 0;
+        break;
+      case 'End':
+        next = buttons.length - 1;
+        break;
+      default:
+        return;
+    }
+    next = Math.max(0, Math.min(next, buttons.length - 1));
+    if (next === current) return;
+    e.preventDefault();
+    buttons[next].focus();
+  };
 
   const results = useMemo(() => searchIconNames(query), [query]);
   const visibleResults = results.slice(0, MAX_RESULTS);
@@ -167,7 +210,11 @@ export function IconPicker({
           <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
             {t('slices.browseIcons', { count: results.length })}
           </div>
-          <div className="grid max-h-56 grid-cols-8 gap-1 overflow-y-auto rounded-md border p-2">
+          <div
+            ref={resultsRef}
+            onKeyDown={handleGridKeyDown}
+            className="grid max-h-56 grid-cols-8 gap-1 overflow-y-auto rounded-md border p-2"
+          >
             {visibleResults.map((name) => {
               return (
                 <button

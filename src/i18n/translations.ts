@@ -14,6 +14,7 @@ export const translations: Record<Locale, TranslationResource> = {
     'header.subtitle': 'Radial Infographic Generator',
 
     'theme.switchToDark': 'Switch to dark theme',
+    'theme.switchToSystem': 'Switch to system theme',
     'theme.switchToLight': 'Switch to light theme',
 
     'language.label': 'Language',
@@ -144,6 +145,9 @@ export const translations: Record<Locale, TranslationResource> = {
     'statusBar.ready': 'Ready',
     'statusBar.shortcuts': 'Ctrl+Z undo \u00B7 Ctrl+Shift+Z redo',
 
+    'upload.invalidType': 'Only SVG or PNG files are supported',
+    'upload.tooLarge': 'File too large \u2014 the maximum is 2 MB',
+
     'error.title': 'Something went wrong',
     'error.message': 'An unexpected error occurred while rendering. Your project data is safe \u2014 reloading keeps your edits.',
     'error.reload': 'Reload app',
@@ -174,6 +178,7 @@ export const translations: Record<Locale, TranslationResource> = {
     'header.subtitle': 'Gerador de Infogr\u00E1fico Radial',
 
     'theme.switchToDark': 'Mudar para tema escuro',
+    'theme.switchToSystem': 'Mudar para tema do sistema',
     'theme.switchToLight': 'Mudar para tema claro',
 
     'language.label': 'Idioma',
@@ -303,6 +308,9 @@ export const translations: Record<Locale, TranslationResource> = {
 
     'statusBar.ready': 'Pronto',
     'statusBar.shortcuts': 'Ctrl+Z desfazer \u00B7 Ctrl+Shift+Z refazer',
+
+    'upload.invalidType': 'Apenas arquivos SVG ou PNG s\u00E3o suportados',
+    'upload.tooLarge': 'Arquivo grande demais \u2014 o m\u00E1ximo \u00E9 2 MB',
 
     'error.title': 'Algo deu errado',
     'error.message': 'Ocorreu um erro inesperado ao renderizar. Seus dados do projeto est\u00E3o seguros \u2014 recarregar mant\u00E9m suas edi\u00E7\u00F5es.',

@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Slice } from '@/types/infographic';
-import { createUploadedImage } from '@/lib/fileUpload';
+import { createUploadedImage, validateImageFile } from '@/lib/fileUpload';
 import { IconPicker } from '@/components/editor/IconPicker';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -171,10 +171,15 @@ function SliceForm({ slice, onUpdate }: SliceFormProps) {
   const { t } = useI18n();
   const uploadedIcons = useProjectStore((state) => state.uploadedIcons);
   const addUploadedIcon = useProjectStore((state) => state.addUploadedIcon);
+  const reportError = useProjectStore((state) => state.reportError);
   const typography = useProjectStore((state) => state.typography);
 
   const handleIconUpload = async (file: File) => {
-    if (!['image/svg+xml', 'image/png'].includes(file.type)) return;
+    const check = validateImageFile(file);
+    if (!check.ok) {
+      reportError({ key: check.reason === 'size' ? 'upload.tooLarge' : 'upload.invalidType' });
+      return;
+    }
     const image = await createUploadedImage(file);
     addUploadedIcon(image);
     onUpdate({ uploadedIconId: image.id, icon: undefined });
