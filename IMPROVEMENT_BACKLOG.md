@@ -10,6 +10,12 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 
 ## Round status
 
+### 2026-01-05 (round 14): canvas pan/zoom — ✅
+
+| # | Item | Severity | Impact | Status |
+|---|------|----------|--------|--------|
+| 1 | **Canvas pan/zoom** — wrapper-transform design keeps the SVG untransformed (exports + geometry gauntlet unaffected at zoom 1); zoom controls (1x-4x, step 0.25, % readout), Ctrl/Cmd+wheel zoom, drag-to-pan when zoomed, viewport reset on geometry change; pure viewport math with 7 unit tests + e2e | HIGH | Inspect and fine-tune large infographics close-up | ✅ |
+
 ### 2026-01-05 (round 13): keyboard shortcuts reference + localized document title — ✅
 
 | # | Item | Severity | Impact | Status |

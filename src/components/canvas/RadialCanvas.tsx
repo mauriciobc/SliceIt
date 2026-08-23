@@ -1,4 +1,7 @@
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Minus, Plus, RotateCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { clampPan, clampZoom, normalizeViewport, stepZoom, WHEEL_ZOOM_FACTOR, type PanOffset } from '@/lib/viewport';
 import { hsl } from 'd3-color';
 import { useProjectStore } from '@/store/useProjectStore';
 import { computeCanvasGeometry } from '@/lib/geometry';
@@ -46,6 +49,63 @@ export function RadialCanvas() {
     return Math.min(scaleX, scaleY) * 0.95;
   }, [containerWidth, containerHeight, geometry.width, geometry.height]);
 
+  // ---- Pan / zoom (transforms apply to the WRAPPER, never the SVG, so export
+  // capture and the geometry gauntlet stay unaffected at zoom 1).
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState<PanOffset>({ x: 0, y: 0 });
+  const dragRef = useRef<{ pointerId: number; startX: number; startY: number; basePan: PanOffset } | null>(null);
+  const containerSize = { width: containerWidth, height: containerHeight };
+  const contentSize = { width: geometry.width * scale, height: geometry.height * scale };
+
+  // Reset the viewport when the project geometry changes (aspect ratio,
+  // slices...). Adjusting state during render per the React docs ("derived
+  // state from props") keeps it immediate and avoids effect ordering issues.
+  const geometryKey = geometry.width + 'x' + geometry.height;
+  const [lastGeometryKey, setLastGeometryKey] = useState(geometryKey);
+  if (lastGeometryKey !== geometryKey) {
+    setLastGeometryKey(geometryKey);
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  }
+
+  // Non-passive wheel listener so preventDefault works reliably.
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+    const onWheel = (e: WheelEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        setZoom((current) => {
+          const next = clampZoom(current * (e.deltaY < 0 ? WHEEL_ZOOM_FACTOR : 1 / WHEEL_ZOOM_FACTOR));
+          const normalized = normalizeViewport(pan, next, containerSize, contentSize);
+          setPan(normalized.pan);
+          return normalized.zoom;
+        });
+        return;
+      }
+      if (zoom > 1) {
+        e.preventDefault();
+        setPan((p) => clampPan({ x: p.x, y: p.y - e.deltaY }, zoom, containerSize, contentSize));
+      }
+    };
+    wrapper.addEventListener('wheel', onWheel, { passive: false });
+    return () => wrapper.removeEventListener('wheel', onWheel);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zoom, pan, containerWidth, containerHeight, geometry.width, geometry.height, scale]);
+
+  const zoomBy = (direction: 1 | -1) => {
+    const next = stepZoom(zoom, direction);
+    const normalized = normalizeViewport(pan, next, containerSize, contentSize);
+    setZoom(normalized.zoom);
+    setPan(normalized.pan);
+  };
+
+  const resetViewport = () => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
+
   return (
     <div
       ref={containerRef}
@@ -54,6 +114,40 @@ export function RadialCanvas() {
         'absolute inset-0 m-3 flex items-center justify-center overflow-hidden rounded-lg bg-background shadow-sm sm:m-6'
       )}
     >
+      <div
+        ref={wrapperRef}
+        className="flex h-full w-full select-none items-center justify-center"
+        style={{
+          transform: zoom === 1 && pan.x === 0 && pan.y === 0 ? undefined : `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+          transformOrigin: '50% 50%',
+          touchAction: zoom > 1 ? 'none' : undefined,
+          cursor: zoom > 1 ? 'grab' : undefined,
+        }}
+        onPointerDown={(e) => {
+          if (zoom <= 1) return;
+          e.preventDefault();
+          dragRef.current = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, basePan: pan };
+          (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+        }}
+        onPointerMove={(e) => {
+          const drag = dragRef.current;
+          if (!drag || drag.pointerId !== e.pointerId) return;
+          setPan(
+            clampPan(
+              { x: drag.basePan.x + (e.clientX - drag.startX), y: drag.basePan.y + (e.clientY - drag.startY) },
+              zoom,
+              containerSize,
+              containerSize
+            )
+          );
+        }}
+        onPointerUp={(e) => {
+          if (dragRef.current?.pointerId === e.pointerId) dragRef.current = null;
+        }}
+        onPointerCancel={(e) => {
+          if (dragRef.current?.pointerId === e.pointerId) dragRef.current = null;
+        }}
+      >
       <svg
         id="radial-canvas"
         width={geometry.width * scale}
@@ -186,6 +280,46 @@ export function RadialCanvas() {
           </g>
         ) : null}
       </svg>
+      </div>
+
+      <div className="absolute bottom-2 right-2 z-10 flex items-center gap-1 rounded-lg border bg-background/95 p-1 shadow-sm">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={() => zoomBy(-1)}
+          disabled={zoom <= 1}
+          aria-label={t('canvas.zoomOut')}
+          title={t('canvas.zoomOut')}
+        >
+          <Minus className="h-3.5 w-3.5" />
+        </Button>
+        <span className="w-10 text-center text-xs tabular-nums" aria-live="polite">
+          {Math.round(zoom * 100)}%
+        </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={() => zoomBy(1)}
+          disabled={zoom >= 4}
+          aria-label={t('canvas.zoomIn')}
+          title={t('canvas.zoomIn')}
+        >
+          <Plus className="h-3.5 w-3.5" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={resetViewport}
+          disabled={zoom === 1 && pan.x === 0 && pan.y === 0}
+          aria-label={t('canvas.zoomReset')}
+          title={t('canvas.zoomReset')}
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+        </Button>
+      </div>
     </div>
   );
 }

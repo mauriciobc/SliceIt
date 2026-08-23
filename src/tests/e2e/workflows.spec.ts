@@ -186,6 +186,43 @@ test.describe('keyboard shortcuts reference', () => {
   });
 });
 
+
+test.describe('canvas zoom', () => {
+  test('zoom controls scale the preview and reset to fit', async ({ page }) => {
+    await page.goto('/');
+    const svg = page.locator('#radial-canvas');
+    // Wait for fonts/layout to settle so the baseline width is stable
+    // (early measures during ResizeObserver/font settling differ by ~10%).
+    await page.waitForFunction(() => {
+      const el = document.querySelector('#radial-canvas');
+      return !!el && el.getBoundingClientRect().width > 400;
+    });
+    await page.waitForTimeout(400);
+    const before = (await svg.boundingBox())!.width;
+
+    await page.getByRole('button', { name: 'Zoom in' }).click();
+    const zoomed = (await svg.boundingBox())!.width;
+    expect(zoomed).toBeGreaterThan(before);
+
+    await page.getByRole('button', { name: 'Zoom out' }).click();
+    const back = (await svg.boundingBox())!.width;
+    expect(Math.abs(back - before)).toBeLessThan(2);
+
+    // Ctrl+wheel zooms in continuously (native non-passive listener).
+    await page.getByRole('button', { name: 'Zoom in' }).click();
+    await page.keyboard.down('Control');
+    await page.mouse.move(640, 400);
+    await page.mouse.wheel(0, -120);
+    await page.keyboard.up('Control');
+    const wheelZoomed = (await svg.boundingBox())!.width;
+    expect(wheelZoomed).toBeGreaterThan(before);
+
+    await page.getByRole('button', { name: 'Reset zoom' }).click();
+    const reset = (await svg.boundingBox())!.width;
+    expect(Math.abs(reset - before)).toBeLessThan(2);
+  });
+});
+
 test.describe('mobile layout', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 

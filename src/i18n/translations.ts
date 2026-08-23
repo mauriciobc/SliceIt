@@ -114,6 +114,9 @@ export const translations: Record<Locale, TranslationResource> = {
     'palette.gradientIntensity': 'Gradient Intensity: {{value}}',
 
     'canvas.ariaLabel': 'Radial infographic preview',
+    'canvas.zoomIn': 'Zoom in',
+    'canvas.zoomOut': 'Zoom out',
+    'canvas.zoomReset': 'Reset zoom',
     'canvas.aspectRatio': 'Aspect Ratio',
     'canvas.custom': 'Custom',
     'canvas.width': 'Width',
@@ -290,6 +293,9 @@ export const translations: Record<Locale, TranslationResource> = {
     'palette.gradientIntensity': 'Intensidade do Gradiente: {{value}}',
 
     'canvas.ariaLabel': 'Pr\u00E9-visualiza\u00E7\u00E3o do infogr\u00E1fico radial',
+    'canvas.zoomIn': 'Aproximar',
+    'canvas.zoomOut': 'Afastar',
+    'canvas.zoomReset': 'Redefinir zoom',
     'canvas.aspectRatio': 'Propor\u00E7\u00E3o',
     'canvas.custom': 'Personalizado',
     'canvas.width': 'Largura',
