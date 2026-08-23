@@ -1,10 +1,12 @@
 import { ErrorBoundary } from '@/components/app/ErrorBoundary';
+import { Toast } from '@/components/app/Toast';
 import { RadialCanvas } from '@/components/canvas/RadialCanvas';
 import { EditorPanel } from '@/components/editor/EditorPanel';
 import { ExportPanel } from '@/components/export/ExportPanel';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { AppStatusBar } from '@/components/layout/AppStatusBar';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
 import { useProjectStore } from '@/store/useProjectStore';
 
 // Expose store for E2E gauntlet validation (dev only)
@@ -14,13 +16,16 @@ if (typeof window !== 'undefined' && import.meta.env.DEV) {
 }
 
 export function InfographicApp() {
+  const [focusMode, setFocusMode] = useState(false);
+
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <AppHeader />
+      <AppHeader focusMode={focusMode} onToggleFocus={() => setFocusMode((v) => !v)} />
 
       <main className="flex flex-1 flex-col lg:flex-row lg:overflow-hidden">
         <ErrorBoundary>
-        {/* Full-width above the canvas on small screens; fixed 384px sidebar on lg+. */}
+        {/* Hidden in presentation mode. */}
+        {!focusMode && (
         <aside
           className={cn(
             'w-full flex-shrink-0 overflow-y-auto border-b border-border bg-card p-4',
@@ -29,6 +34,7 @@ export function InfographicApp() {
         >
           <EditorPanel />
         </aside>
+        )}
 
         <section className="relative flex min-h-[55vh] flex-1 flex-col overflow-hidden bg-muted/30 lg:min-h-0">
           <div className="relative flex-1">
@@ -40,6 +46,7 @@ export function InfographicApp() {
       </main>
 
       <AppStatusBar />
+      <Toast />
     </div>
   );
 }

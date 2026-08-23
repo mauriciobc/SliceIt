@@ -149,6 +149,11 @@ export const translations: Record<Locale, TranslationResource> = {
     'upload.tooLarge': 'File too large \u2014 the maximum is 2 MB',
     'upload.scriptDetected': 'Uploaded SVG files cannot contain scripts',
 
+    'toast.dismiss': 'Dismiss',
+    'export.downloaded': 'Export downloaded',
+    'focus.enter': 'Enter focus mode',
+    'focus.exit': 'Exit focus mode',
+
     'error.title': 'Something went wrong',
     'error.message': 'An unexpected error occurred while rendering. Your project data is safe \u2014 reloading keeps your edits.',
     'error.reload': 'Reload app',
@@ -313,6 +318,11 @@ export const translations: Record<Locale, TranslationResource> = {
     'upload.invalidType': 'Apenas arquivos SVG ou PNG s\u00E3o suportados',
     'upload.tooLarge': 'Arquivo grande demais \u2014 o m\u00E1ximo \u00E9 2 MB',
     'upload.scriptDetected': 'Arquivos SVG enviados n\u00E3o podem conter scripts',
+
+    'toast.dismiss': 'Dispensar',
+    'export.downloaded': 'Exporta\u00E7\u00E3o baixada',
+    'focus.enter': 'Entrar no modo foco',
+    'focus.exit': 'Sair do modo foco',
 
     'error.title': 'Algo deu errado',
     'error.message': 'Ocorreu um erro inesperado ao renderizar. Seus dados do projeto est\u00E3o seguros \u2014 recarregar mant\u00E9m suas edi\u00E7\u00F5es.',

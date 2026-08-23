@@ -7,11 +7,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Languages, Monitor, Moon, Sun } from 'lucide-react';
+import { Languages, Maximize2, Minimize2, Monitor, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/hooks/useTheme';
 
-export function AppHeader() {
+interface AppHeaderProps {
+  focusMode?: boolean;
+  onToggleFocus?: () => void;
+}
+
+export function AppHeader({ focusMode = false, onToggleFocus }: AppHeaderProps) {
   const { t, locale, setLocale } = useI18n();
   const { theme, toggleTheme } = useTheme();
 
@@ -25,6 +30,17 @@ export function AppHeader() {
       </span>
 
       <div className="ml-auto flex items-center gap-1 sm:gap-2">
+        {onToggleFocus && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggleFocus}
+            aria-label={focusMode ? t('focus.exit') : t('focus.enter')}
+            title={focusMode ? t('focus.exit') : t('focus.enter')}
+          >
+            {focusMode ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="icon"

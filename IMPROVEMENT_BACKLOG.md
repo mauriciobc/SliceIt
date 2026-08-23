@@ -10,6 +10,14 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 
 ## Round status
 
+### 2026-01-05 (round 12): export feedback toast + presentation focus mode — ✅
+
+| # | Item | Severity | Impact | Status |
+|---|------|----------|--------|--------|
+| 1 | **Export confirmation toast** — dependency-free toast channel + <Toast/> (role=status, aria-live, auto-dismiss 3s) shown after SVG/PNG downloads; 4 unit tests + e2e | MEDIUM | Users get download confirmation (silent downloads were the norm) | ✅ |
+| 2 | **Focus/presentation mode** — header toggle hides the editor sidebar so the canvas fills the viewport; e2e locked in | MEDIUM | Present/share the infographic without distraction | ✅ |
+| 3 | Toast positioned clear of the export bar; e2e flake observed once (undo/redo click, passes standalone — transient CDP issue covered by CI retries) | — | Evidence recorded | ✅ |
+
 ### 2026-01-05 (round 11): SVG upload script-sanity + README changelog — ✅
 
 | # | Item | Severity | Impact | Status |

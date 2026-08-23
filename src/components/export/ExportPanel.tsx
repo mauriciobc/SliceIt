@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select';
 import { Download, Image } from 'lucide-react';
 import { useI18n } from '@/i18n';
+import { showToast } from '@/lib/toast';
 
 export function ExportPanel() {
   const { t } = useI18n();
@@ -19,11 +20,13 @@ export function ExportPanel() {
     // Defer the exporter (file-saver) until the button is actually pressed.
     const { exportSvg } = await import('@/lib/exportSvg');
     await exportSvg();
+    showToast('export.downloaded');
   };
   const handleExportPng = async () => {
     // Defer the exporter (html-to-image, file-saver) until the button is pressed.
     const { exportPng } = await import('@/lib/exportPng');
     await exportPng(pngResolution);
+    showToast('export.downloaded');
   };
 
   return (

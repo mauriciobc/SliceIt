@@ -95,6 +95,38 @@ test.describe('popover behaviour', () => {
   });
 });
 
+
+test.describe('focus mode and feedback', () => {
+  test('focus mode hides the editor and restores it', async ({ page }) => {
+    await page.goto('/');
+    const editor = page.locator('aside');
+    await expect(editor).toBeVisible();
+
+    await page.getByRole('button', { name: 'Enter focus mode' }).click();
+    await expect(editor).not.toBeVisible();
+    // The canvas section now spans the full viewport width.
+    const section = await page.locator('main section').boundingBox();
+    expect(section!.width).toBeGreaterThan(1100);
+
+    await page.getByRole('button', { name: 'Exit focus mode' }).click();
+    await expect(editor).toBeVisible();
+  });
+
+  test('exporting shows a transient confirmation toast', async ({ page }) => {
+    await page.goto('/');
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByRole('button', { name: 'SVG' }).click(),
+    ]);
+    expect(download.suggestedFilename()).toBe('infographic.svg');
+
+    const toast = page.getByRole('status');
+    await expect(toast).toContainText('Export downloaded');
+    // Auto-dismisses after ~3s.
+    await expect(toast).not.toBeVisible({ timeout: 6000 });
+  });
+});
+
 test.describe('mobile layout', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
