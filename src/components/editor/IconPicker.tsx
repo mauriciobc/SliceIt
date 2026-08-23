@@ -150,6 +150,7 @@ export function IconPicker({
                     key={icon.id}
                     type="button"
                     title={icon.name}
+                    aria-pressed={uploadedValue === icon.id}
                     onClick={() => selectUploaded(icon.id)}
                     className={cn(
                       'flex h-9 w-9 items-center justify-center rounded-md border hover:bg-muted/50',
@@ -173,6 +174,7 @@ export function IconPicker({
                   key={name}
                   type="button"
                   title={name}
+                  aria-pressed={value === name}
                   onClick={() => selectBuiltin(name)}
                   className={cn(
                     'flex h-9 w-9 items-center justify-center rounded-md hover:bg-muted/50',

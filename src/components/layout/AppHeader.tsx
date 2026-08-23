@@ -7,10 +7,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Languages } from 'lucide-react';
+import { Languages, Moon, Sun } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useTheme } from '@/hooks/useTheme';
 
 export function AppHeader() {
   const { t, locale, setLocale } = useI18n();
+  const { theme, toggleTheme } = useTheme();
 
   const handleChange = (value: string) => setLocale(value as Locale);
 
@@ -21,7 +24,16 @@ export function AppHeader() {
         {t('header.subtitle')}
       </span>
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-1 sm:gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleTheme}
+          aria-label={t(theme === 'dark' ? 'theme.switchToLight' : 'theme.switchToDark')}
+          title={t(theme === 'dark' ? 'theme.switchToLight' : 'theme.switchToDark')}
+        >
+          {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </Button>
         <Languages className="h-4 w-4 text-muted-foreground" />
         <Select value={locale} onValueChange={handleChange}>
           <SelectTrigger className="h-8 w-[118px] sm:w-[150px]" aria-label={t('language.label')}>

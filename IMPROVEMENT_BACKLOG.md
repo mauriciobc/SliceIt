@@ -10,6 +10,13 @@ Legend: ✅ done · 🔜 in progress · ⬜ open
 
 ## Round status
 
+### 2026-01-05 (round 4): dark mode + icon-picker pressed states — ✅
+
+| # | Item | Severity | Impact | Status |
+|---|------|----------|--------|--------|
+| 1 | **Dark mode** — theme module + useTheme hook + FOUC-guard inline script; header toggle (Sun/Moon) with i18n; persists in localStorage, honors OS preference on first visit | MEDIUM | The .dark palette was dead code; now a shipped feature with reload-persistence e2e | ✅ |
+| 2 | **Icon picker pressed states** — aria-pressed on builtin + uploaded icon buttons | LOW | Screen readers now announce selection | ✅ |
+
 ### 2026-01-05 (round 3): mobile responsiveness + validation coverage + data-workflow e2e — ✅
 
 | # | Item | Severity | Impact | Status |

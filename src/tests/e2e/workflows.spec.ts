@@ -49,6 +49,24 @@ test.describe('data workflows', () => {
   });
 });
 
+
+test.describe('theme', () => {
+  test('dark mode toggle applies and persists across reloads', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('html')).not.toHaveClass(/dark/);
+
+    await page.getByRole('button', { name: 'Switch to dark theme' }).click();
+    await expect(page.locator('html')).toHaveClass(/dark/);
+
+    // The editor chrome is dark while the canvas keeps its light infographic bg.
+    await page.reload();
+    await expect(page.locator('html')).toHaveClass(/dark/);
+
+    await page.getByRole('button', { name: 'Switch to light theme' }).click();
+    await expect(page.locator('html')).not.toHaveClass(/dark/);
+  });
+});
+
 test.describe('mobile layout', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 

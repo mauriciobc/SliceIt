@@ -13,6 +13,9 @@ export const translations: Record<Locale, TranslationResource> = {
   en: {
     'header.subtitle': 'Radial Infographic Generator',
 
+    'theme.switchToDark': 'Switch to dark theme',
+    'theme.switchToLight': 'Switch to light theme',
+
     'language.label': 'Language',
     'language.en': 'English',
     'language.ptBR': 'Português (BR)',
@@ -164,6 +167,9 @@ export const translations: Record<Locale, TranslationResource> = {
 
   'pt-BR': {
     'header.subtitle': 'Gerador de Infogr\u00E1fico Radial',
+
+    'theme.switchToDark': 'Mudar para tema escuro',
+    'theme.switchToLight': 'Mudar para tema claro',
 
     'language.label': 'Idioma',
     'language.en': 'English',
